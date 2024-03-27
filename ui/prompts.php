@@ -157,7 +157,7 @@ $strict_mode_activated = $jsdata['strict_mode_activated'];
                 </button>
             </a>
             <div class="p-6 md:p-8 mb-4 text-center">
-                <h1 class="mb-2 text-2xl font-semibold text-black ">Multiple Cameras Detected</h1>
+                <h1 class="mb-2 text-2xl font-semibold text-black " id = "detectedCamHeader">Multiple Cameras Detected</h1>
 
                 <h3 class="mb-6 text-md font-normal text-gray-700 ">We detected 2 cameras. Please select one of them to continue.</h3>
                 <!-- FOR DROPDOWN -->
@@ -500,10 +500,12 @@ $strict_mode_activated = $jsdata['strict_mode_activated'];
 
     // When windows load
     window.onload = function() {
+        document.querySelector('h1.mb-2.text-2xl.font-semibold.text-black').textContent = "New Content Here";
         var filterElement = document.getElementById('filter');
         var videoInputDeviceCount = 0;
         var cameraHeaderText = document.querySelector('h3.text-gray-700');
         var selectedCameraLabel = "Select any camera";
+        var detectedCamModal = document.getElementById('detectedCamHeader');
 
         // Retrieve all available camera devices to display and
         // make them options in the camera select modal.
@@ -535,6 +537,10 @@ $strict_mode_activated = $jsdata['strict_mode_activated'];
                     filterElement.querySelector('ul').appendChild(option);
                 }
             });
+
+                if (videoInputDeviceCount == 1){
+                    detectedCamModal.textContent = "One Camera Detected";
+                }
                 if (cameraHeaderText) {
                     cameraHeaderText.textContent = "We detected " + videoInputDeviceCount + " cameras. Please select one of them to continue.";
                 }
@@ -543,44 +549,44 @@ $strict_mode_activated = $jsdata['strict_mode_activated'];
             console.error('Error enumerating devices:', err);
         });
 
-        // Prevent dev mode
-        document.addEventListener("contextmenu", function (e) {
-            e.preventDefault();
-        }, false);
+        // // Prevent dev mode
+        // document.addEventListener("contextmenu", function (e) {
+        //     e.preventDefault();
+        // }, false);
 
-        document.addEventListener("keydown", function (e) {
-            //document.onkeydown = function(e) {
-            // "I" key
-            if (e.ctrlKey && e.shiftKey && e.keyCode == 73) {
-                disabledEvent(e);
-            }
-            // "J" key
-            if (e.ctrlKey && e.shiftKey && e.keyCode == 74) {
-                disabledEvent(e);
-            }
-            // "S" key + macOS
-            if (e.keyCode == 83 && (navigator.platform.match("Mac") ? e.metaKey : e.ctrlKey)) {
-                disabledEvent(e);
-            }
-            // "U" key
-            if (e.ctrlKey && e.keyCode == 85) {
-                disabledEvent(e);
-            }
-            // "F12" key
-            if (event.keyCode == 123) {
-                disabledEvent(e);
-            }
-        }, false);
+        // document.addEventListener("keydown", function (e) {
+        //     //document.onkeydown = function(e) {
+        //     // "I" key
+        //     if (e.ctrlKey && e.shiftKey && e.keyCode == 73) {
+        //         disabledEvent(e);
+        //     }
+        //     // "J" key
+        //     if (e.ctrlKey && e.shiftKey && e.keyCode == 74) {
+        //         disabledEvent(e);
+        //     }
+        //     // "S" key + macOS
+        //     if (e.keyCode == 83 && (navigator.platform.match("Mac") ? e.metaKey : e.ctrlKey)) {
+        //         disabledEvent(e);
+        //     }
+        //     // "U" key
+        //     if (e.ctrlKey && e.keyCode == 85) {
+        //         disabledEvent(e);
+        //     }
+        //     // "F12" key
+        //     if (event.keyCode == 123) {
+        //         disabledEvent(e);
+        //     }
+        // }, false);
 
-        function disabledEvent(e) {
-            if (e.stopPropagation) {
-                e.stopPropagation();
-            } else if (window.event) {
-                window.event.cancelBubble = true;
-            }
-            e.preventDefault();
-            return false;
-        }
+        // function disabledEvent(e) {
+        //     if (e.stopPropagation) {
+        //         e.stopPropagation();
+        //     } else if (window.event) {
+        //         window.event.cancelBubble = true;
+        //     }
+        //     e.preventDefault();
+        //     return false;
+        // }
         
     };
 </script>
