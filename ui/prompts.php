@@ -157,9 +157,9 @@ $strict_mode_activated = $jsdata['strict_mode_activated'];
                 </button>
             </a>
             <div class="p-6 md:p-8 mb-4 text-center">
-                <h1 class="mb-2 text-2xl font-semibold text-black " id = "detectedCamHeader">Multiple Cameras Detected</h1>
+                <h1 class="mb-2 text-2xl font-semibold text-black " id = "detectedCamHeader">No Camera Detected</h1>
 
-                <h3 class="mb-6 text-md font-normal text-gray-700 ">We detected 2 cameras. Please select one of them to continue.</h3>
+                <h3 class="mb-6 text-md font-normal text-gray-700 "></h3>
                 <!-- FOR DROPDOWN -->
                 <div  class="inline-flex items-end">
                     <button id="dropdownDefault" data-dropdown-toggle="filter"
@@ -540,6 +540,10 @@ $strict_mode_activated = $jsdata['strict_mode_activated'];
 
                 if (videoInputDeviceCount == 1){
                     detectedCamModal.textContent = "One Camera Detected";
+                }
+
+                if (videoInputDeviceCount > 1){
+                    detectedCamModal.textContent = "Multiple Camera Detected";
                 }
                 if (cameraHeaderText) {
                     cameraHeaderText.textContent = "We detected " + videoInputDeviceCount + " cameras. Please select one of them to continue.";
