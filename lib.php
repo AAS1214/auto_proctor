@@ -214,7 +214,11 @@ class QuizProctor {
                         $this->redirect($this->CFG->wwwroot . '/local/auto_proctor/ui/prompts.php?data=' . urlencode($jsdata_json));
                     }
 
-
+                    // Notification warnings
+                    echo '<script src="https://cdn.tailwindcss.com"></script>';
+                    echo '<link href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.3.0/flowbite.min.css" rel="stylesheet" />';
+                    echo '<script src="' . $this->CFG->wwwroot . '/local/auto_proctor/ui/notif_warning.js"></script>';
+        
                     // Check if monitor tab switching is activated
                     // If yes, then provide the link to the tab monitoring feature tool.
                     if ($monitor_tab_switching_activated[0] == 1) {                 

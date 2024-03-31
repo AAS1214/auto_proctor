@@ -80,10 +80,12 @@ $(document).ready(function () {
                 // If user shared screen and continously sharing it
                 // Capture and save the shared screen when the tab is switched
                 captureAndSaveScreen('tab_switch');
+                showWarningNotificationForFiveSeconds('We have detected that you Tab switched');
             }
             else if(screenShared === false || stopsSharing === true){
                 // If user did not share screen or when user shared screen but stop it
                 // Will not capture but will still be reported in the acitivity table
+                showWarningNotificationForFiveSeconds('We have detected that you Tab switched');
                 captureAndSaveScreen('tab_switch_screen_not_shared');
             }                                        
         }

@@ -500,7 +500,7 @@ $strict_mode_activated = $jsdata['strict_mode_activated'];
 
     // When windows load
     window.onload = function() {
-        document.querySelector('h1.mb-2.text-2xl.font-semibold.text-black').textContent = "New Content Here";
+        //document.querySelector('h1.mb-2.text-2xl.font-semibold.text-black').textContent = "New Content Here";
         var filterElement = document.getElementById('filter');
         var videoInputDeviceCount = 0;
         var cameraHeaderText = document.querySelector('h3.text-gray-700');

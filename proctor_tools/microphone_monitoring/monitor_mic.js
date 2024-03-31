@@ -234,6 +234,12 @@ $(document).ready(function () {
                 evidence_name_type = activity_type;
                 console.log('start recording');
                 const intervalId = startTimer();
+                if (activity_type === "speech_detected"){
+                    showWarningNotificationForFiveSeconds('We have detected that you make Speech Noise');
+                }
+                else{
+                    showWarningNotificationForFiveSeconds('We have detected that you make Loud Noise');
+                }
                 //feedbackGain.gain.value = 1;
 
                 susCounter++;
