@@ -410,6 +410,16 @@ $(document).ready(function () {
                     susCounter++;
                     captureEvidence(evidence_name_type);
                     timestamp_captured = activity_timestamp;
+
+                    if (evidence_name_type === "suspicious_movement"){
+                        showWarningNotificationForFiveSeconds('We have detected that you make Suspicious Movement');
+                    }
+                    else if (evidence_name_type === "multiple_face"){
+                        showWarningNotificationForFiveSeconds('We have detected Multiple Face');
+                    }
+                    else if (evidence_name_type === "no_face"){
+                        showWarningNotificationForFiveSeconds('We have detected No Face');
+                    }
                 }
             }
         }
