@@ -14,6 +14,7 @@ $(document).ready(function () {
             } 
             else{
                 captureAndSaveScreen('tab_switch_screen_not_shared');
+                showWarningNotificationForFiveSeconds('We have detected that you Tab switched');
                 console.log('Tab switched');                                     
             }
         }
