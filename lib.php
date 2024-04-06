@@ -514,6 +514,88 @@ function local_auto_proctor_extend_navigation(global_navigation $navigation){
             //     echo "</br>";
             $violation_points = 0;
         }
+
+        // ================== DELETE ARCHIVED QUIZ ==================
+        // SELECT QUIZ 60 DAYS OVER
+        $archived = 1;
+        $sql = "SELECT quizid
+            FROM {auto_proctor_quiz_tb}
+            WHERE archived = :archived
+            AND archived_on < DATE_SUB(NOW(), INTERVAL 1 DAY)
+        ";
+        $params = array('archived' => $archived);
+        $archived_quiz = $DB->get_fieldset_sql($sql, $params);
+
+        // foreach($archived_quiz as $quiz){
+        //     $quizid = $quiz;
+
+        //     // DELETE ALL CAPTURED EVIDENCE
+        //             // Select all report under the selected quiz
+        //                 $sql = "SELECT * FROM {auto_proctor_activity_report_tb}
+        //                 WHERE quizid = :quizid
+        //             ";
+
+        //             $params = array('quizid' => $quizid);
+        //             $quiz_reports = $DB->get_records_sql($sql, $params);
+
+        //         if (!empty($quiz_reports)) {
+
+        //             foreach ($quiz_reports as $report) {
+                        
+        //                 $activity_type = $report->activity_type;
+        //                 if ($activity_type >= 1 && $activity_type <= 5){
+        //                     $directory = $CFG->wwwroot . '/local/auto_proctor/'.'proctor_tools/evidences/screen_capture_evidence/';
+        //                 }
+
+        //                 if ($activity_type >= 6 && $activity_type <= 10){
+        //                     $directory = 'proctor_tools/evidences/camera_capture_evidence/';
+        //                 }
+
+        //                 if ($activity_type >= 11 && $activity_type <= 14){
+        //                     $directory = 'proctor_tools/evidences/microphone_capture_evidence/';
+        //                 }
+
+        //                 $file_path = $directory . $report->evidence;
+
+        //                 echo $file_path . "<br>";
+
+        //                 $file_handle = @fopen($file_path, 'r');
+        //                 //if ($file_handle !== false) {
+        //                     // echo "File opened<br>";
+        //                     // Check if the file exists
+        //                     if (file_exists($file_path)) {
+        //                         echo "File exists<br>";
+        //                     } else {
+        //                         echo "File does not exist<br>";
+        //                     }
+        //                 // } else {
+        //                 //     echo "Error opening the file.<br>";
+        //                 // }
+                        
+        //             }
+        //         }
+        //         else {
+        //             echo "no report";
+        //         }
+        // }
+        if (!empty($archived_quiz)){
+            echo "
+            <script>
+                var auto_delete = 1;
+
+                // Send the quizid to a PHP script via AJAX
+                var xhr = new XMLHttpRequest();
+                xhr.open('POST', '". $CFG->wwwroot ."/local/auto_proctor/ui/functions/auto_delete.php', true);
+                xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+                xhr.onreadystatechange = function() {
+                    if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
+                        
+                    }
+                };
+                xhr.send('auto_delete=' + auto_delete);
+            </script>
+        ";
+        }
 }
 
 
