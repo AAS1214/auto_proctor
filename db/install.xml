@@ -16,6 +16,7 @@
             <FIELD NAME="monitor_microphone" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
             <FIELD NAME="strict_mode" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
             <FIELD NAME="archived" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+            <FIELD NAME="archived_on" TYPE="datetime" NOTNULL="false" SEQUENCE="false"/>
         </FIELDS>
         <KEYS>
             <!-- Define id as the primary key -->
@@ -93,7 +94,7 @@
         </KEYS>
         </TABLE>
 
-        <!-- TABLE FOR STORING VIDEO SESSION -->
+        <!-- TABLE FOR STORING STUDENTS TRUST SCORE -->
         <TABLE NAME="auto_proctor_trust_score_tb" COMMENT="proctoring session log">
         <FIELDS>
             <!-- Define id as an auto-increment key -->

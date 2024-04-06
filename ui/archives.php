@@ -229,7 +229,7 @@ $wwwroot = $CFG->wwwroot;;
                                     <th scope="col" class="p-4 text-sm font-bold tracking-wider text-left text-gray-700">
                                         <button onclick="sortTableByDate()" class="hover:text-[#FFD66E]">
                                             <div class="flex items-center uppercase text-xs font-medium tracking-wider ">
-                                                Date Created
+                                                Date Archived
                                                 <span class="ml-2">
 
                                                     <svg width=" 25px" height="25px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -237,6 +237,17 @@ $wwwroot = $CFG->wwwroot;;
                                                         <path d="M6 14.4433L7.41421 13.0291L11.6569 17.2717L15.8995 13.0291L17.3137 14.4433L11.6569 20.1001L6 14.4433Z" fill="#6b7280" />
                                                     </svg>
 
+                                                </span>
+                                            </div>
+                                        </button>
+                                    </th>
+                                    <th scope="col" class="p-4 text-sm font-bold tracking-wider text-left text-gray-700">
+                                        <button onclick="window.location.href='https:#';" class="hover:text-[#FFD66E]">
+                                            <div class="flex items-center uppercase text-xs font-medium tracking-wider ">
+                                                
+                                                <span class="ml-2">
+
+                                            
                                                 </span>
                                             </div>
                                         </button>
@@ -295,13 +306,17 @@ $wwwroot = $CFG->wwwroot;;
 
                                     $course_teacher = $DB->get_records_sql($sql, $params);
 
-                                    // Select quiz date created
-                                    $sql = "SELECT timecreated
-                                                            FROM {quiz}
-                                                            WHERE id = :quiz_id;
-                                                        ";
-                                    $param = array('quiz_id' => $archived_quiz->quizid);
-                                    $date_created = $DB->get_fieldset_sql($sql, $param);
+                                    // // Select quiz date created
+                                    // $sql = "SELECT timecreated
+                                    //                         FROM {quiz}
+                                    //                         WHERE id = :quiz_id;
+                                    //                     ";
+                                    // $param = array('quiz_id' => $archived_quiz->quizid);
+                                    // $date_created = $DB->get_fieldset_sql($sql, $param);
+
+                                    $timestamp = strtotime($archived_quiz->archived_on);
+                                    $date_archived = date("d M Y", $timestamp);
+
                                     echo '
                                                     <tr>
                                                         <td class="p-4 text-sm font-semibold  whitespace-nowrap text-gray-800">
@@ -322,10 +337,13 @@ $wwwroot = $CFG->wwwroot;;
                                     echo '
                                                         </td>
                                                         <td class="p-4 text-sm font-normal text-gray-500 whitespace-nowrap ">
-                                                            ' . date("d M Y", $date_created[0]) . '
+                                                            ' . $date_archived . '
                                                         </td>
                                                         <td class="p-4 text-sm font-normal text-blue-700 hover:text-blue-900 whitespace-nowrap ">
                                                                 <a href="" class="restoreThis" data-quizid="' . $archived_quiz->quizid . '">Restore</a>
+                                                        </td>
+                                                        <td class="p-4 text-sm font-normal text-red-700 hover:text-red-900 whitespace-nowrap ">
+                                                                <a href="" class="deleteThis" data-quizid="' . $archived_quiz->quizid . '">Delete</a>
                                                         </td>
                                                     </tr>
                                                 ';
@@ -371,6 +389,7 @@ $wwwroot = $CFG->wwwroot;;
     document.addEventListener("DOMContentLoaded", function() {
         // Select all elements with class 'archiveThis'
         var restoreLinks = document.querySelectorAll('.restoreThis');
+        var deleteLinks = document.querySelectorAll('.deleteThis');
 
         // Iterate over each 'archiveThis' link
         restoreLinks.forEach(function(link) {
@@ -399,6 +418,37 @@ $wwwroot = $CFG->wwwroot;;
                 // when still loading it will not function
                 restoreLinks.removeAttribute('href');
                 restoreLinks.disabled = true;
+
+                // Here you can perform further actions like sending the quizId via AJAX
+            });
+        });
+
+        deleteLinks.forEach(function(link) {
+            // Add click event listener
+            link.addEventListener('click', function(event) {
+                // Prevent the default action of the link (i.e., navigating to href)
+                event.preventDefault();
+                //createOverlay();
+
+                // Retrieve the quizid from the data attribute
+                var quizId = link.getAttribute('data-quizid');
+
+                // Send the quizid to a PHP script via AJAX
+                var xhr = new XMLHttpRequest();
+                xhr.open('POST', 'functions/delete_archive.php', true);
+                xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+                xhr.onreadystatechange = function() {
+                    if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
+                        console.log('Quiz deleted successfully');
+                        //removeOverlay();
+                        location.reload();
+                    }
+                };
+                xhr.send('quizid=' + quizId);
+                // When page is loading prevent clicking archive button
+                // when still loading it will not function
+                deleteLinks.removeAttribute('href');
+                deleteLinks.disabled = true;
 
                 // Here you can perform further actions like sending the quizId via AJAX
             });

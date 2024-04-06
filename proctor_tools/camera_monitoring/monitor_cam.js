@@ -308,7 +308,7 @@ $(document).ready(function () {
                     }
                 }
             };
-            xhr.send('userid=' + jsdata.userid + '&quizid=' + jsdata.quizid + '&quizattempt=' + jsdata.quizattempt + '&recording_filename=' + recording_filename);
+            xhr.send('userid=' + jsdata.userid + '&quizid=' + jsdata.quizid + '&quizattempt=' + jsdata.quizattempt + '&recording_filename=' + encodeURIComponent(recording_filename));
         }
 
         function stopRecording() {
@@ -504,7 +504,7 @@ $(document).ready(function () {
                     }
                 }
             };
-            xhr.send('evidence_name_type=' + evidence_name_type + '&filename=' + filename + '&activity_timestamp=' + timestamp_captured + '&userid=' + jsdata.userid + '&quizid=' + jsdata.quizid + '&quizattempt=' + jsdata.quizattempt);
+            xhr.send('evidence_name_type=' + evidence_name_type + '&filename=' + encodeURIComponent(filename) + '&activity_timestamp=' + timestamp_captured + '&userid=' + jsdata.userid + '&quizid=' + jsdata.quizid + '&quizattempt=' + jsdata.quizattempt);
         }
         
         const faceMesh = new FaceMesh({locateFile: (file) => {

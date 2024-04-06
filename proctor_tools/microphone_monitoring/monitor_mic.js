@@ -294,7 +294,7 @@ $(document).ready(function () {
                 }
             }
         };
-        xhr.send('evidence_name_type=' + evidence_name_type + '&filename=' + filename + '&userid=' + jsdata.userid + '&quizid=' + jsdata.quizid + '&quizattempt=' + jsdata.quizattempt);
+        xhr.send('evidence_name_type=' + evidence_name_type + '&filename=' + encodeURIComponent(filename) + '&userid=' + jsdata.userid + '&quizid=' + jsdata.quizid + '&quizattempt=' + jsdata.quizattempt);
     }
     
     // Function to generate timestamp

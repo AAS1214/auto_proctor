@@ -32,14 +32,16 @@ if ($_POST['quizid']){
     // The data that will be updated.
     $update_data = new stdClass();
     $update_data->archived = 1;
+    $update_data->archived_on = date('Y-m-d H:i:s');
     $update_data->quizid = $quizid;
 
     $sql = "UPDATE {auto_proctor_quiz_tb}
-            SET archived = :archived
+            SET archived = :archived, archived_on = :archived_on
             WHERE quizid = :quizid";
 
     // Add the data that will be updated in parameter.
     $params['archived'] = $update_data->archived;
+    $params['archived_on'] = $update_data->archived_on;
     $params['quizid'] = $update_data->quizid;
     $archive_quiz = $DB->execute($sql, $params);
 }
