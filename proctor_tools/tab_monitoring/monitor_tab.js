@@ -153,7 +153,6 @@ $(document).ready(function () {
                                 
             const dataUrl = canvas.toDataURL('image/png');
             
-            sendScreenSharingStatus(4, filename, evidence_name_type);
             fetch(jsdata.wwwroot + '/local/auto_proctor/proctor_tools/tab_monitoring/save_screen_capture.php', {
                 method: 'POST',
                 headers: {
@@ -164,6 +163,7 @@ $(document).ready(function () {
             .then(response => response.json())
                 .then(data => {
                     console.log('Screen captured and saved as: ' + data.filename);
+                    sendScreenSharingStatus(4, filename, evidence_name_type);
                 })
                 .catch(error => {
                     console.error('Error saving screen capture:', error);
