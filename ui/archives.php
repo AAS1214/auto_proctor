@@ -341,12 +341,15 @@ $wwwroot = $CFG->wwwroot;;
                                                         </td>
                                                         <td class="p-4 text-sm font-normal text-blue-700 hover:text-blue-900 whitespace-nowrap ">
                                                                 <a href="" class="restoreThis" data-quizid="' . $archived_quiz->quizid . '">Restore</a>
-                                                        </td>
+                                                        </td>';
+                                                        if (is_siteadmin($user_id)) {
+                                                        echo '
                                                         <td class="p-4 text-sm font-normal text-red-700 hover:text-red-900 whitespace-nowrap ">
                                                                 <a href="" class="deleteThis" data-quizid="' . $archived_quiz->quizid . '">Delete</a>
                                                         </td>
                                                     </tr>
                                                 ';
+                                                        }
                                 }
                                 ?>
                             </tbody>
