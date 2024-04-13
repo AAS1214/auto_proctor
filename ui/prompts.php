@@ -76,12 +76,14 @@ $chosen_data_pa = $jsdata['chosen_data_pa'];
                 <h3 class="text-xl font-semibold text-gray-900 ">
                   Data Privacy Policy Agreement 
                 </h3>
-                <button type="button" class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center " data-modal-hide="default-modal">
-                    <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
-                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
-                    </svg>
-                    <span class="sr-only">Close modal</span>
-                </button>
+                <a href = "<?php echo $wwwroot.'/mod/quiz/view.php?id=' . $cmid;?>">
+                    <button type="button" class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center " data-modal-hide="default-modal">
+                        <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
+                        </svg>
+                        <span class="sr-only">Close modal</span>
+                    </button>
+                </a>
             </div>
             <!-- Modal body -->
             <div class="p-4 md:p-5 max-h-96 overflow-y-auto">
@@ -146,7 +148,7 @@ $chosen_data_pa = $jsdata['chosen_data_pa'];
             <!-- Modal footer -->
             <div class="flex items-center p-4 md:p-5 border-t border-gray-200 rounded-b ">
                 <button id="acceptButton" data-modal-hide="data-popup-modal" type="button" class="text-white bg-gray-300 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center " style="cursor: not-allowed;">I accept</button>
-                <button data-modal-hide="default-modal" type="button" class="py-2.5 px-5 ms-3 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 ">Decline</button>
+                <button onclick = "declinePrivacy()" data-modal-hide="default-modal" type="button" class="py-2.5 px-5 ms-3 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 ">Decline</button>
             </div>
         </div>
     </div>
@@ -424,6 +426,13 @@ $chosen_data_pa = $jsdata['chosen_data_pa'];
         xhr.send('userid=' + <?php echo $userid; ?> + '&data_pa=' + data_pa);
         
     });
+
+    // If user decline the data privacy agreement, dispplay message then quit from the setup modal
+    function declinePrivacy(){
+        if (confirm("We require your agreement to proceed with the proctoring session, as data collection is necessary. Should you change your decision, please attempt the quiz again.")) {
+            window.location.href = "<?php echo $wwwroot.'/mod/quiz/view.php?id=' . $cmid;?>";
+        }
+    }
 
 
     // If microphone monitoring is activated then ask user's mic permission
