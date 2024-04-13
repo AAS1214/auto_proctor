@@ -163,6 +163,22 @@ class QuizProctor {
                         $insert_new_session = $this->DB->insert_record('auto_proctor_proctoring_session_tb', $insertData);
                     }
 
+                    // Select user's response to data privacy agreement
+                        $sql = "SELECT *
+                            FROM {auto_proctor_data_privacy_agreement_tb}
+                            WHERE userid = :userid"
+                        ;
+                        $params = array('userid' => $userid);
+                        $chosen_data_pa = $this->DB->get_records_sql($sql, $params);
+
+                    // Check if user has record in data privacy agreement table
+                    // If not then insert new record
+                    if (empty($chosen_data_pa)){
+                        $insertData = new stdClass();
+                        $insertData->userid = $userid;
+                        $insert_user_agreement = $this->DB->insert_record('auto_proctor_data_privacy_agreement_tb', $insertData);
+                    }
+
                     // Select user's prompted_of_modal_setup status
                     // To check if the user's finished setting up
                         $sql = "SELECT prompted_of_modal_setup
@@ -174,6 +190,15 @@ class QuizProctor {
                         $params = array('userid' => $userid, 'quizid' => $quizid, 'attempt' => $attemptValue);
                         $prompted_of_modal_setup = $this->DB->get_fieldset_sql($sql, $params);
 
+                    // Select user's response to data privacy agreement
+                    // To check if the user's already agreed to the agreement
+                        $sql = "SELECT agreed_to_the_agreement
+                            FROM {auto_proctor_data_privacy_agreement_tb}
+                            WHERE userid = :userid"
+                        ;
+                        $params = array('userid' => $userid);
+                        $chosen_data_pa = $this->DB->get_fieldset_sql($sql, $params);
+
                     // Select user's chosen camera
                     // To be used in monitor camera session
                         $sql = "SELECT camera_device_id
@@ -184,6 +209,8 @@ class QuizProctor {
                         ;
                         $params = array('userid' => $userid, 'quizid' => $quizid, 'attempt' => $attemptValue);
                         $chosen_camera_device = $this->DB->get_fieldset_sql($sql, $params);
+
+                    
                     
                     // Pass necessarry data value to js files in form of json
                     // For data processing
@@ -199,13 +226,13 @@ class QuizProctor {
                             'monitor_microphone_activated' => $monitor_microphone_activated[0],
                             'chosen_camera_device' => $chosen_camera_device[0],
                             'monitor_tab_switching_activated' => $monitor_tab_switching_activated[0],
+                            'chosen_data_pa' => $chosen_data_pa[0],
                         );
                         echo '<script> var jsdata = ' . json_encode($jsdata) . '; </script>';
 
                     // Pass necessarry data value to php files in form of json
                     // Convert the array to JSON
                         $jsdata_json = json_encode($jsdata);
-
 
                     // Check if user has been prompted of the AP setup modal.
                     // If not then redirected to prompts page.
