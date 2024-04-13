@@ -50,7 +50,7 @@ $monitor_camera_activated = $jsdata['monitor_camera_activated'];
 $monitor_microphone_activated = $jsdata['monitor_microphone_activated'];
 $monitor_tab_switching_activated = $jsdata['monitor_tab_switching_activated'];
 $strict_mode_activated = $jsdata['strict_mode_activated'];
-
+$chosen_data_pa = $jsdata['chosen_data_pa'];
 ?>
 
 <!DOCTYPE html>
@@ -67,7 +67,91 @@ $strict_mode_activated = $jsdata['strict_mode_activated'];
 <body class="overflow-hidden">
     
 <!-- MODAL HERE YOU CAN COPY IT PASE IT TO THE MAIN CODE -->
-<div id="popup-modal" tabindex="-1" class="overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full flex" aria-modal="true" role="dialog">
+<div id="data-popup-modal" tabindex="-1" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full flex" aria-modal="true" role="dialog">
+    <div class="relative p-4 w-full max-w-2xl max-h-full">
+        <!-- Modal content -->
+        <div class="relative bg-white rounded-lg shadow ">
+            <!-- Modal header -->
+            <div class="flex items-center justify-between p-4 md:p-5 border-b rounded-t ">
+                <h3 class="text-xl font-semibold text-gray-900 ">
+                  Data Privacy Policy Agreement 
+                </h3>
+                <button type="button" class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center " data-modal-hide="default-modal">
+                    <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
+                    </svg>
+                    <span class="sr-only">Close modal</span>
+                </button>
+            </div>
+            <!-- Modal body -->
+            <div class="p-4 md:p-5 max-h-96 overflow-y-auto">
+                <p class="text-base leading-relaxed text-gray-500 ">
+                  This Data Privacy Policy Agreement ("Agreement") outlines the manner in which personal information is collected, used, and disclosed by <a class="text-blue-800" href="https://e-rtu.edu.ph">e-RTU</a>. By accessing or using the Website, you agree to the terms outlined in this Agreement. 
+                </p>
+                <h5 class="text-base leading-relaxed font-bold text-gray-700 ">1. Information Collection: </h5>
+                <p class="text-base leading-relaxed text-gray-500 ">
+                  We collect personal information provided voluntarily by users, including but not limited to names, email addresses, and demographic information. This information is collected through forms, cookies, and other tracking technologies. 
+                </p>
+                <h5 class="text-base leading-relaxed font-bold text-gray-700 ">2. Use of Information: </h5>
+                <p class="text-base leading-relaxed text-gray-500 ">
+                  Personal information collected is used for the following purposes: 
+                </p>
+                <p class="text-base leading-relaxed m text-gray-500 ">
+                  To provide and personalize our services 
+                  <br>
+                  To communicate with users regarding their inquiries, requests, or transactions 
+                  <br>
+                  To improve our website and services 
+                </p>
+                <h5 class="text-base leading-relaxed font-bold text-gray-700 ">3. Data Security: </h5>
+                <p class="text-base leading-relaxed text-gray-500 ">
+                  We implement reasonable security measures to protect personal information from unauthorized access, disclosure, alteration, or destruction. However, no method of transmission over the internet or electronic storage is 100% secure. 
+                </p>
+                <h5 class="text-base leading-relaxed font-bold text-gray-700 ">4. Third-party Disclosure:  </h5>
+                <p class="text-base leading-relaxed text-gray-500 ">
+                  We may share personal information with trusted third-party service providers to facilitate services offered through the Website. These third parties are contractually obligated to maintain the confidentiality and security of the information. 
+                </p>
+                <h5 class="text-base leading-relaxed font-bold text-gray-700 ">5. Cookies:  </h5>
+                <p class="text-base leading-relaxed text-gray-500 ">
+                  Cookies are used to enhance user experience and collect information about usage patterns on the Website. Users have the option to disable cookies in their browser settings, but this may affect the functionality of the Website. 
+                </p>
+                <h5 class="text-base leading-relaxed font-bold text-gray-700 ">6. Camera, Microphone, and Screen Activity Access:  </h5>
+                <p class="text-base leading-relaxed text-gray-500 ">
+                  The Website may request access to your device's camera, microphone, and screen activity for specific features or functionalities. By granting access, you consent to the recording of video, audio, and screen content as necessary for the intended purpose. We may use this recorded content in accordance with this Privacy Policy. 
+                  <br>
+                  Please note that you have the option to deny access to your camera, microphone, and screen activity through your device settings or browser preferences. However, certain features of the Website may be limited or unavailable if access is denied. 
+                </p>
+                <h5 class="text-base leading-relaxed font-bold text-gray-700 ">7. Data Retention: </h5>
+                <p class="text-base leading-relaxed text-gray-500 ">
+                  We retain personal information for as long as necessary to fulfill the purposes outlined in this Agreement, unless a longer retention period is required by law. 
+                </p>
+                <h5 class="text-base leading-relaxed font-bold text-gray-700 ">8. Changes to Privacy Policy: </h5>
+                <p class="text-base leading-relaxed text-gray-500 ">
+                  We reserve the right to update or modify this Privacy Policy at any time. Any changes will be effective immediately upon posting the revised policy on the Website. 
+                </p>
+                <h5 class="text-base leading-relaxed font-bold text-gray-700 ">9. Contact Us: </h5>
+                <p class="text-base leading-relaxed text-gray-500 ">
+                  If you have any questions or concerns about this Privacy Policy or our data practices, please contact us at rtuflexys@rtu.edu.ph. 
+                </p>
+                  <div class="form-check"  class="text-base leading-relaxed text-gray-600 italic ">
+                    <input
+                      class="form-check-input"
+                      type="checkbox"
+                      value=""
+                      id="agreeBox"
+                    />
+                    <label class="form-check-label text-base leading-relaxed text-gray-600 italic " for="">By accessing or using the Website, you acknowledge that you have read, understood, and agree to be bound by this Privacy Policy Agreement. </label>
+                  </div>
+            </div>
+            <!-- Modal footer -->
+            <div class="flex items-center p-4 md:p-5 border-t border-gray-200 rounded-b ">
+                <button id="acceptButton" data-modal-hide="data-popup-modal" type="button" class="text-white bg-gray-300 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center " style="cursor: not-allowed;">I accept</button>
+                <button data-modal-hide="default-modal" type="button" class="py-2.5 px-5 ms-3 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 ">Decline</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="popup-modal" tabindex="-1" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full flex" aria-modal="true" role="dialog">
 <!-- <div id="popup-modal" tabindex="-1" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full"> -->
     <div class="relative p-10 py-9 w-full max-w-3xl max-h-full">
         <div class="relative bg-white rounded-lg shadow">
@@ -246,13 +330,100 @@ $strict_mode_activated = $jsdata['strict_mode_activated'];
     let wwwroot = <?php echo json_encode($wwwroot); ?>;
     let cmid = <?php echo json_encode($cmid); ?>;
     let strict_mode_activated = <?php echo json_encode($strict_mode_activated); ?>;
+    let chosen_data_pa = <?php echo json_encode($chosen_data_pa); ?>
 
     var popupModal = document.getElementById("popup-modal");
+    var dataPopupMoodal = document.getElementById('data-popup-modal');
     var camSelectPopupModal = document.getElementById("cam-select-popup-modal");
     var have_not_multiple_btn = document.getElementById('have-not-multiple-btn');
     var have_multiple_btn = document.getElementById('have-multiple-btn');
     var continue_multiple_btn = document.getElementById('continue-multiple-btn');
+
+    // Data privacy disabling and enabling the accept button
+    const agreeBox = document.getElementById('agreeBox');
+    const acceptButton = document.getElementById('acceptButton');
+
+    // Add an event listener to the checkbox to check its status
+    agreeBox.addEventListener('change', function() {
+    // If checkbox is checked, enable the button; otherwise, disable it
+    if (agreeBox.checked) {
+            acceptButton.classList.remove("bg-gray-300", "hover:bg-blue-800");
+            acceptButton.classList.add("bg-blue-700", "hover:bg-blue-800");
+            acceptButton.style.cursor = "pointer";
+            acceptButton.removeAttribute('disabled');
+        } else {
+            acceptButton.classList.remove("bg-blue-700", "hover:bg-blue-800");
+            acceptButton.classList.add("bg-gray-300");
+            acceptButton.setAttribute('disabled', 'disabled');
+            acceptButton.style.cursor = "not-allowed";
+        }
+    });
+
+    // Initially disable the button
+    acceptButton.setAttribute('disabled', 'disabled');
     
+    // If user already agreed to the data privacy agreement
+    if (chosen_data_pa == 1){
+        // Hiding the data privacy modal.
+        // dataPopupMoodal.classList.remove("flex");
+        // dataPopupMoodal.classList.add("hidden");
+
+        // dataPopupMoodal.classList.remove("hidden");
+        // dataPopupMoodal.classList.add("flex");
+
+        if (!window.screen.isExtended){
+            // Display the cam select modal.
+            camSelectPopupModal.classList.remove("hidden");
+            camSelectPopupModal.classList.add("flex");
+        }
+        else{
+            // Display the multiple monitor modal.
+            popupModal.classList.remove("hidden");
+            popupModal.classList.add("flex");
+        }
+    }
+    else{
+        dataPopupMoodal.classList.remove("hidden");
+        dataPopupMoodal.classList.add("flex");
+    }
+
+    // If data privacy accept button was clicked
+    // Add click event listener to the button
+    acceptButton.addEventListener('click', function() {
+        // Hide the modal by adding a CSS class
+        dataPopupMoodal.classList.remove("flex");
+        dataPopupMoodal.classList.add('hidden');
+
+        if (!window.screen.isExtended){
+            // Display the cam select modal.
+            camSelectPopupModal.classList.remove("hidden");
+            camSelectPopupModal.classList.add("flex");
+        }
+        else{
+            // Display the multiple monitor modal.
+            popupModal.classList.remove("hidden");
+            popupModal.classList.add("flex");
+        }
+
+        // Send the response to php for server processing
+        const data_pa = 1;
+        var xhr = new XMLHttpRequest();
+        xhr.open('POST', <?php echo json_encode($wwwroot . '/local/auto_proctor/ui/functions/save_data_privacy.php'); ?>, true);
+        xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === 4) {
+                if (xhr.status === 200) {
+                    console.log('POST request successful');
+                    // You can add further actions if needed
+                } else {
+                    console.error('POST request failed with status: ' + xhr.status);
+                    // Handle the error or provide feedback to the user
+                }
+            }
+        };
+        xhr.send('userid=' + <?php echo $userid; ?> + '&data_pa=' + data_pa);
+        
+    });
 
 
     // If microphone monitoring is activated then ask user's mic permission
@@ -302,35 +473,37 @@ $strict_mode_activated = $jsdata['strict_mode_activated'];
     // The multiple monitor modal defaulted to prompt.
     // So, if only a single monitor was detected, we hide the multiple monitor modal.
         if (!window.screen.isExtended){
-
-            // If camera monitoring is activated then we prompt the camera select modal.
-            if (monitor_camera_activated === 1){
-                camSelectPopupModal.classList.remove("hidden");
-                camSelectPopupModal.classList.add("flex");
-                camSelectPopupModal.setAttribute("aria-modal", "true");
-                camSelectPopupModal.setAttribute("role", "dialog");
-            }
-            
-            // If camera monitoring is deactivated and microphone monitoring is activated,
-            // then the data will automatically be sent when microphone permission is granted.
-            if (monitor_camera_activated !== 1 && monitor_microphone_activated === 1){
-                navigator.mediaDevices.getUserMedia({ audio: true })
-                .then(function(stream) {
+            // If user already agreed to the data privacy agreement
+            if (chosen_data_pa == 1){
+                // If camera monitoring is activated then we prompt the camera select modal.
+                if (monitor_camera_activated === 1){
+                    camSelectPopupModal.classList.remove("hidden");
+                    camSelectPopupModal.classList.add("flex");
+                    camSelectPopupModal.setAttribute("aria-modal", "true");
+                    camSelectPopupModal.setAttribute("role", "dialog");
+                }
+                
+                // If camera monitoring is deactivated and microphone monitoring is activated,
+                // then the data will automatically be sent when microphone permission is granted.
+                if (monitor_camera_activated !== 1 && monitor_microphone_activated === 1){
+                    navigator.mediaDevices.getUserMedia({ audio: true })
+                    .then(function(stream) {
+                        sendSessionSetupData();
+                    })
+                    .catch(function(err) {
+                        confirm("Please give microphone permission.");
+                    });
+                }
+                
+                // If only the tab monitoring feature is activated, then data will be automatically sent.
+                if (monitor_tab_switching_activated === 1 && monitor_camera_activated !== 1 && monitor_microphone_activated !== 1){
                     sendSessionSetupData();
-                })
-                .catch(function(err) {
-                    confirm("Please give microphone permission.");
-                });
-            }
-            
-            // If only the tab monitoring feature is activated, then data will be automatically sent.
-            if (monitor_tab_switching_activated === 1 && monitor_camera_activated !== 1 && monitor_microphone_activated !== 1){
-                sendSessionSetupData();
-            }
+                }
 
-            // Hiding the multiple monitor modal.
-            popupModal.classList.remove("flex");
-            popupModal.classList.add("hidden");
+                // Hiding the multiple monitor modal.
+                popupModal.classList.remove("flex");
+                popupModal.classList.add("hidden");
+            }
         }
 
     // If the camera monitoring is activated,
