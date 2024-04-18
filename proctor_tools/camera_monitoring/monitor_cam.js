@@ -118,11 +118,14 @@ $(document).ready(function () {
                 deviceId: deviceId ? { exact: deviceId } : undefined,
                 facingMode: 'user', // Set facingMode if preferred
                 frameRate: { max: 7 },
+                width: { ideal: 400, max: 1620 },
+                height: { ideal: 200, max: 1215 },
+                aspectRatio: { ideal: 4 / 3 } // Adjust aspect ratio if needed
                 },
                 audio: true,
             };
         };
-
+        
         // Get all available camera device.
         navigator.mediaDevices.enumerateDevices()
         .then(function(devices) {
@@ -218,7 +221,7 @@ $(document).ready(function () {
                 video_recording.srcObject = window.stream_recording;
             }
 
-            console.log('recording')
+            console.log('recording');
 
             // Set this to true for the purpose of saving the video.
             isRecording = true;
@@ -432,8 +435,18 @@ $(document).ready(function () {
             setTimeout(() => {
                 // Create canvas for the capturing the video element.
                 const canvas = document.createElement('canvas');
-                canvas.width = video.videoWidth;
-                canvas.height = video.videoHeight;
+
+                // Define the desired height
+                const desiredHeight = 250;
+
+                // Calculate the aspect ratio
+                const aspectRatio = video.videoWidth / video.videoHeight;
+
+                // Calculate the width based on the desired height and aspect ratio
+                const desiredWidth = Math.round(desiredHeight * aspectRatio);
+
+                canvas.width = desiredWidth;
+                canvas.height = desiredHeight;
 
                 // Draw image in the canvas from the video
                 const ctx = canvas.getContext('2d');

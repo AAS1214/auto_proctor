@@ -143,8 +143,26 @@ $(document).ready(function () {
         if (evidence_name_type !== 'tab_switch_screen_not_shared' && evidence_name_type !== 'did_not_share_screen' && evidence_name_type !== 'stops_sharing_screen'){
             setTimeout(() => {
             const canvas = document.createElement('canvas');
-            canvas.width = videoElement.videoWidth;
-            canvas.height = videoElement.videoHeight;
+            
+            const ASPECT_RATIO = 16 / 9;
+
+            // Define desired height
+            const desiredHeight = 550; // Adjust as needed
+
+            // Calculate width based on aspect ratio
+            const desiredWidth = Math.round(desiredHeight * ASPECT_RATIO);
+
+            // Adjust size of the video for capturing
+            if (videoElement.videoHeight >= 1080 && videoElement.videoWidth >= 1620) {
+              canvas.width = desiredWidth;
+              canvas.height = desiredHeight;
+            }
+            else{
+              canvas.width = videoElement.videoWidth;
+              canvas.height = videoElement.videoHeight;
+
+            }
+
             const ctx = canvas.getContext('2d');
             ctx.drawImage(videoElement, 0, 0, canvas.width, canvas.height);
                                 
