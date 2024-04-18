@@ -351,7 +351,6 @@ global $DB, $USER, $CFG;
                 $params = array('user_id' => $user_id, 'quiz_id' => $quiz_id, 'quiz_attempt' => $quiz_attempt, 'activity1' => 4, 'activity2' => 5);
                 $quiz_activities = $DB->get_records_sql($sql, $params);
             }
-
     }
 
 
@@ -608,7 +607,7 @@ global $DB, $USER, $CFG;
                                             Attempt
                                         </p>
                                         <h3 class="font-medium text-gray-900  ">
-                                            1
+                                            <?php echo $quiz_attempt; ?>
                                         </h3>
                                     </div>
                                 </div>
