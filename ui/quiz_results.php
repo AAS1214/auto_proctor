@@ -172,129 +172,131 @@ if (isset($_GET['course_id']) && isset($_GET['quiz_id'])) {
 
     $params = array('quiz_id' => $quiz_id);
 
-    // Merge student IDs into params array
-    foreach ($student_ids as $student_id) {
-        $params['student_id_' . $student_id] = $student_id;
-    }
+    if ($student_ids){
+        // Merge student IDs into params array
+        foreach ($student_ids as $student_id) {
+            $params['student_id_' . $student_id] = $student_id;
+        }
 
-    $quiz_completers = $DB->get_records_sql($sql, $params);
+        $quiz_completers = $DB->get_records_sql($sql, $params);
 
-    // print_r($quiz_completers);
-    // echo "</br>";
+        // print_r($quiz_completers);
+        // echo "</br>";
 
-    // SELECTING IN PROGRESS QUIZ TAKERS
-    $sql = "SELECT *
-                FROM {quiz_attempts}
-                WHERE quiz = :quiz_id
-                AND userid IN ($student_id_placeholders)
-                AND state = 'inprogress';
-            ";
-
-    $params = array('quiz_id' => $quiz_id);
-
-    // Merge student IDs into params array
-    foreach ($student_ids as $student_id) {
-        $params['student_id_' . $student_id] = $student_id;
-    }
-
-    $inprogress_quiz_takers = $DB->get_records_sql($sql, $params);
-
-    $num_of_inprogress = count($inprogress_quiz_takers);
-
-    // print_r($inprogress_quiz_takers);
-    // echo "</br>";
-
-    // NUMBER OF EXEPECTED QUIZ TAKERS
-    $num_of_all_students = count($enrolled_students);
-
-    // NUMBER OF QUIZ COMPLETERS
-    $num_of_quiz_completers = count($quiz_completers);
-
-    // NUMBER OF STUDENT THAT SUBMITTED THE QUIZ
-    $sql = "SELECT *
-                FROM {quiz_attempts}
-                WHERE quiz = :quiz_id
-                AND userid IN ($student_id_placeholders)
-                AND attempt = 1
-                AND state = 'finished';
-            ";
-
-    $params = array('quiz_id' => $quiz_id);
-
-    // Merge student IDs into params array
-    foreach ($student_ids as $student_id) {
-        $params['student_id_' . $student_id] = $student_id;
-    }
-
-    $all_student_submitted = $DB->get_records_sql($sql, $params);
-
-    $num_of_student_submitted = count($all_student_submitted);
-
-    // NUMBER OF STUDENT THAT NOT YET SUBMITTED THE QUIZ
-    $num_of_student_unsubmitted = $num_of_all_students - $num_of_student_submitted;
-
-
-    // =========== QUIZ STATUS
-
-    $sql = "SELECT timeclose
-                FROM {quiz}
-                WHERE id = :quiz_id;
-            ";
-
-    $params = array('quiz_id' => $quiz_id);
-    $quiz_time_close = $DB->get_fieldset_sql($sql, $params);
-
-    $date_quiz_created = date('j-M g:i A', $quiz_time_close[0]);
-    $current_time = date('j-M g:i A');
-
-    if ($date_quiz_created > $current_time) {
-        $quiz_status = "In progress";
-    } else {
-        $quiz_status = "Complete";
-    }
-
-    if ($quiz_time_close[0] == 0){
-        $quiz_status = "In progress";
-    }
-
-    //echo $current_time;
-
-
-    // ========= SELECT DATE QUIZ CREATED
-    $sql = "SELECT timecreated
-                FROM {quiz}
-                WHERE id = :quiz_id;
-            ";
-
-    $params = array('quiz_id' => $quiz_id);
-    $date_quiz_created = $DB->get_fieldset_sql($sql, $params);
-
-    // ============ ALL STUDENTS QUIZ ATTEMPTS
-    $sql = "SELECT *
-                FROM {quiz_attempts}
-                WHERE quiz = :quiz_id;
-            ";
-
-    $params = array('quiz_id' => $quiz_id);
-
-    $all_quiz_attempts = $DB->get_records_sql($sql, $params);
-
-    $count_quiz_attempts = count($all_quiz_attempts);
-
-    // print_r($all_quiz_attempts);
-    // echo "</br>";
-
-
-    // ========== SELECT ALL QUIZ ACTIVITY REPORT
-    $sql = "SELECT *
-                    FROM {auto_proctor_activity_report_tb}
-                    WHERE quizid = :quiz_id;
+        // SELECTING IN PROGRESS QUIZ TAKERS
+        $sql = "SELECT *
+                    FROM {quiz_attempts}
+                    WHERE quiz = :quiz_id
+                    AND userid IN ($student_id_placeholders)
+                    AND state = 'inprogress';
                 ";
 
-    $params = array('quiz_id' => $quiz_id);
+        $params = array('quiz_id' => $quiz_id);
 
-    $all_quiz_reports = $DB->get_records_sql($sql, $params);
-    //print_r($all_quiz_reports);
+        // Merge student IDs into params array
+        foreach ($student_ids as $student_id) {
+            $params['student_id_' . $student_id] = $student_id;
+        }
+
+        $inprogress_quiz_takers = $DB->get_records_sql($sql, $params);
+
+        $num_of_inprogress = count($inprogress_quiz_takers);
+
+        // print_r($inprogress_quiz_takers);
+        // echo "</br>";
+
+        // NUMBER OF EXEPECTED QUIZ TAKERS
+        $num_of_all_students = count($enrolled_students);
+
+        // NUMBER OF QUIZ COMPLETERS
+        $num_of_quiz_completers = count($quiz_completers);
+
+        // NUMBER OF STUDENT THAT SUBMITTED THE QUIZ
+        $sql = "SELECT *
+                    FROM {quiz_attempts}
+                    WHERE quiz = :quiz_id
+                    AND userid IN ($student_id_placeholders)
+                    AND attempt = 1
+                    AND state = 'finished';
+                ";
+
+        $params = array('quiz_id' => $quiz_id);
+
+        // Merge student IDs into params array
+        foreach ($student_ids as $student_id) {
+            $params['student_id_' . $student_id] = $student_id;
+        }
+
+        $all_student_submitted = $DB->get_records_sql($sql, $params);
+
+        $num_of_student_submitted = count($all_student_submitted);
+
+        // NUMBER OF STUDENT THAT NOT YET SUBMITTED THE QUIZ
+        $num_of_student_unsubmitted = $num_of_all_students - $num_of_student_submitted;
+
+
+        // =========== QUIZ STATUS
+
+        $sql = "SELECT timeclose
+                    FROM {quiz}
+                    WHERE id = :quiz_id;
+                ";
+
+        $params = array('quiz_id' => $quiz_id);
+        $quiz_time_close = $DB->get_fieldset_sql($sql, $params);
+
+        $date_quiz_created = date('j-M g:i A', $quiz_time_close[0]);
+        $current_time = date('j-M g:i A');
+
+        if ($date_quiz_created > $current_time) {
+            $quiz_status = "In progress";
+        } else {
+            $quiz_status = "Complete";
+        }
+
+        if ($quiz_time_close[0] == 0){
+            $quiz_status = "In progress";
+        }
+
+        //echo $current_time;
+
+
+        // ========= SELECT DATE QUIZ CREATED
+        $sql = "SELECT timecreated
+                    FROM {quiz}
+                    WHERE id = :quiz_id;
+                ";
+
+        $params = array('quiz_id' => $quiz_id);
+        $date_quiz_created = $DB->get_fieldset_sql($sql, $params);
+
+        // ============ ALL STUDENTS QUIZ ATTEMPTS
+        $sql = "SELECT *
+                    FROM {quiz_attempts}
+                    WHERE quiz = :quiz_id;
+                ";
+
+        $params = array('quiz_id' => $quiz_id);
+
+        $all_quiz_attempts = $DB->get_records_sql($sql, $params);
+
+        $count_quiz_attempts = count($all_quiz_attempts);
+
+        // print_r($all_quiz_attempts);
+        // echo "</br>";
+
+
+        // ========== SELECT ALL QUIZ ACTIVITY REPORT
+        $sql = "SELECT *
+                        FROM {auto_proctor_activity_report_tb}
+                        WHERE quizid = :quiz_id;
+                    ";
+
+        $params = array('quiz_id' => $quiz_id);
+
+        $all_quiz_reports = $DB->get_records_sql($sql, $params);
+        //print_r($all_quiz_reports);
+    }
 }
 
 ?>
@@ -443,7 +445,7 @@ if (isset($_GET['course_id']) && isset($_GET['quiz_id'])) {
         </div>
         <div class="items-center sm:flex">
             <div class="flex items-center">
-                <button type="button" id="exportThis" data-quizid="<?php echo $quiz_id; ?>" data-quizname="<?php echo $quiz_name; ?>" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 uppercase focus:ring-blue-300 font-medium rounded-lg text-xs px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">Export</button>
+                <button type="button" id="exportThis" data-quizid="<?php echo $quiz_id; ?>" data-quizname="<?php echo $quiz_name; ?>" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 uppercase focus:ring-blue-300 font-medium rounded-lg text-xs px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800" <?php if (!$student_ids){ echo 'disabled';}?>>Export</button>
             </div>
         </div>
     </div>
