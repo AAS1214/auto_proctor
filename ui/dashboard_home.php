@@ -399,8 +399,8 @@ $num_of_courses = count($course_ids);
 
                                 </tr>
                             </thead>
-                            <tbody class="bg-white ">
-                                <?php
+                            
+                            <?php
 
                                 if (isset($_GET['idAsc'])){
                                     $sql = "
@@ -602,110 +602,119 @@ $num_of_courses = count($course_ids);
 
                                     $all_students = $DB->get_records_sql($sql, $params);
                                 }
+
+                                // Predict total num of pages
+                                $num_pages = $num_of_all_students / 2;
+                                //echo $num_pages;
+
+                                // If number is not even
+                                if (is_float($num_pages)) {
+                                    $float_page = $num_pages;
+                                    $num_pages = (int)$float_page;
+                                    $num_pages++;
+                                }
+
+                                // Generate page name for the element
+                                $pages_name = array();
+                                $pages_name[] = $pagename; // Skipping the first array
+                                // Create name of the section per page
+                                for ($i = 1; $i <= $num_pages; $i++) {
+                                    $pagenum++;
+                                    $pagename = "page" . $pagenum;
+
+                                    $pages_name[] = $pagename;
+
+                                }
+
+                                //print_r($pages_name);
                                 
+                                $page_turner;
                                 foreach ($all_students as $student) {
-
-                                    // ====== SELECT USER INFO
-                                    $sql = "SELECT *
-                                                                FROM {user}
-                                                                WHERE id = :userid
-                                                        ";
-
-                                    // Parameters for the query
-                                    $params = array('userid' => $student->id);
-                                    $user_info = $DB->get_record_sql($sql, $params);
-
-                                    $user_full_name = $user_info->firstname . ' ' . $user_info->lastname;
-
-                                    $user_email = $user_info->email;
-
-                                    $user_idnumber = $user_info->idnumber;
-
-                                    // ====== SELECT COURSE USER ENROLLED IN
-                                    $sql = "SELECT e.courseid
-                                                            FROM {user_enrolments} ue
-                                                            JOIN {enrol} e ON ue.enrolid = e.id
-                                                            WHERE ue.userid = ?
-                                                            AND e.courseid IN ($course_id_placeholders)
-                                                            ORDER BY e.courseid
-                                                        ";
-
-                                    $params = array_merge(array('userid' => $student->id), $course_ids);
-
-                                    // Execute the query
-                                    $course_ids_result = $DB->get_records_sql($sql, $params);
-
-
-                                    echo '
-                                                        <tr>
-                                                            <td class="p-4 text-sm font-normal text-gray-900 whitespace-nowrap ">
-                                                                <span class="font-semibold">' . $user_idnumber . '</span>
-                                                            </td>
-                                                            <td class="p-4 text-sm font-normal text-gray-500 whitespace-nowrap ">
-                                                                ' . $user_full_name . '
-                                                            </td>
-                                                            <td class="p-4 text-sm font-normal text-gray-500 whitespace-nowrap ">
-                                                                ' . $user_email . '
-                                                            </td>
-                                                            <td class="p-4 text-sm font-normal text-gray-500 whitespace-nowrap ">
-                                                    ';
-
-                                    foreach ($course_ids_result as $row) {
-                                        $course_id = $row->courseid;
-
-                                        $sql = "SELECT fullname
-                                                                    FROM {course}
-                                                                    WHERE id = :course_id
+                                    $stud_counter++;
+                                    
+                                    if ($stud_counter === 3){
+                                        $stud_counter = 1;
+                                    }
+                                    if ($stud_counter === 1){
+                                        $page_turner++;
+                                        echo $pages_name[$page_turner];
+                                        echo '<tbody class="bg-white " id = "'. $pages_name[$page_turner] .'" style = "display: none;">';
+                                    }
+                                            // ====== SELECT USER INFO
+                                            $sql = "SELECT *
+                                                                        FROM {user}
+                                                                        WHERE id = :userid
                                                                 ";
 
-                                        $params = array('course_id' => $course_id);
-                                        $enrolled_courses = $DB->get_records_sql($sql, $params);
+                                            // Parameters for the query
+                                            $params = array('userid' => $student->id);
+                                            $user_info = $DB->get_record_sql($sql, $params);
 
-                                        $fullnames_string = '';
+                                            $user_full_name = $user_info->firstname . ' ' . $user_info->lastname;
 
-                                        // Check if the course exists and print its fullname
-                                        if (!empty($enrolled_courses)) {
-                                            // Since get_records_sql() returns an array, we access the first record directly
-                                            $course = reset($enrolled_courses);
-                                            $fullnames_string .= $course->fullname . '</br>';
-                                        }
+                                            $user_email = $user_info->email;
 
-                                        echo $fullnames_string;
+                                            $user_idnumber = $user_info->idnumber;
+
+                                            // ====== SELECT COURSE USER ENROLLED IN
+                                            $sql = "SELECT e.courseid
+                                                                    FROM {user_enrolments} ue
+                                                                    JOIN {enrol} e ON ue.enrolid = e.id
+                                                                    WHERE ue.userid = ?
+                                                                    AND e.courseid IN ($course_id_placeholders)
+                                                                    ORDER BY e.courseid
+                                                                ";
+
+                                            $params = array_merge(array('userid' => $student->id), $course_ids);
+
+                                            // Execute the query
+                                            $course_ids_result = $DB->get_records_sql($sql, $params);
+
+
+                                            echo '
+                                                                <tr>
+                                                                    <td class="p-4 text-sm font-normal text-gray-900 whitespace-nowrap ">
+                                                                        <span class="font-semibold">' . $user_idnumber . '</span>
+                                                                    </td>
+                                                                    <td class="p-4 text-sm font-normal text-gray-500 whitespace-nowrap ">
+                                                                        ' . $user_full_name . '
+                                                                    </td>
+                                                                    <td class="p-4 text-sm font-normal text-gray-500 whitespace-nowrap ">
+                                                                        ' . $user_email . '
+                                                                    </td>
+                                                                    <td class="p-4 text-sm font-normal text-gray-500 whitespace-nowrap ">
+                                                            ';
+
+                                            foreach ($course_ids_result as $row) {
+                                                $course_id = $row->courseid;
+
+                                                $sql = "SELECT fullname
+                                                                            FROM {course}
+                                                                            WHERE id = :course_id
+                                                                        ";
+
+                                                $params = array('course_id' => $course_id);
+                                                $enrolled_courses = $DB->get_records_sql($sql, $params);
+
+                                                $fullnames_string = '';
+
+                                                // Check if the course exists and print its fullname
+                                                if (!empty($enrolled_courses)) {
+                                                    // Since get_records_sql() returns an array, we access the first record directly
+                                                    $course = reset($enrolled_courses);
+                                                    $fullnames_string .= $course->fullname . '</br>';
+                                                }
+
+                                                echo $fullnames_string;
+                                            }
+                                            echo '   </td>
+                                                                </tr>
+                                                            ';
+                                    if ($stud_counter === 3){
+                                        echo '</tbody>';
                                     }
-                                    echo '   </td>
-                                                        </tr>
-                                                    ';
                                 }
-                                ?>
-                                <!-- <tr>
-                                                <td class="p-4 text-sm font-normal text-gray-900 whitespace-nowrap ">
-                                                    <span class="font-semibold">002</span>
-                                                </td>
-                                                <td class="p-4 text-sm font-normal text-gray-500 whitespace-nowrap ">
-                                                    Renzi Delposo
-                                                </td>
-                                                <td class="p-4 text-sm font-semibold text-gray-900 whitespace-nowrap ">
-                                                    renzidelposo@gmail.com
-                                                </td>
-                                                <td class="p-4 text-sm font-normal text-gray-500 whitespace-nowrap ">
-                                                    Art App
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td class="p-4 text-sm font-normal text-gray-900 whitespace-nowrap ">
-                                                    <span class="font-semibold">002</span>
-                                                </td>
-                                                <td class="p-4 text-sm font-normal text-gray-500 whitespace-nowrap ">
-                                                    Renzi Delposo
-                                                </td>
-                                                <td class="p-4 text-sm font-semibold text-gray-900 whitespace-nowrap ">
-                                                    renzidelposo@gmail.com
-                                                </td>
-                                                <td class="p-4 text-sm font-normal text-gray-500 whitespace-nowrap ">
-                                                    Art App
-                                                </td>
-                                            </tr> -->
-                            </tbody>
+                            ?>
                         </table>
                     </div>
                 </div>
@@ -719,34 +728,215 @@ $num_of_courses = count($course_ids);
             <div class="flex items-center space-x-3">
                 <div class="flex items-center mb-4 sm:mb-0">
                     <!-- previous 1 -->
-                    <a href="#" class="inline-flex border justify-center p-1 mr-2 text-gray-500 rounded cursor-pointer hover:text-gray-900 hover:bg-gray-200">
+                    <a href="#" id = "jump_prev" class="inline-flex border justify-center p-1 mr-2 text-gray-500 rounded cursor-pointer hover:text-gray-900 hover:bg-gray-200">
                         <svg class="w-5 h-5 transform -scale-x-1" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path fill-rule="evenodd" clip-rule="evenodd" d="M12.8536 11.1464C13.0488 11.3417 13.0488 11.6583 12.8536 11.8536C12.6583 12.0488 12.3417 12.0488 12.1464 11.8536L8.14645 7.85355C7.95118 7.65829 7.95118 7.34171 8.14645 7.14645L12.1464 3.14645C12.3417 2.95118 12.6583 2.95118 12.8536 3.14645C13.0488 3.34171 13.0488 3.65829 12.8536 3.85355L9.20711 7.5L12.8536 11.1464ZM6.85355 11.1464C7.04882 11.3417 7.04882 11.6583 6.85355 11.8536C6.65829 12.0488 6.34171 12.0488 6.14645 11.8536L2.14645 7.85355C1.95118 7.65829 1.95118 7.34171 2.14645 7.14645L6.14645 3.14645C6.34171 2.95118 6.65829 2.95118 6.85355 3.14645C7.04882 3.34171 7.04882 3.65829 6.85355 3.85355L3.20711 7.5L6.85355 11.1464Z" fill="#6b7280" />
                         </svg>
                     </a>
                     <!-- previous 2 -->
-                    <a href="#" class="inline-flex border justify-center p-1 text-gray-500 rounded cursor-pointer hover:text-gray-900 hover:bg-gray-200">
+                    <a href="#" id = "prev" class="inline-flex border justify-center p-1 text-gray-500 rounded cursor-pointer hover:text-gray-900 hover:bg-gray-200">
                         <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                             <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd"></path>
                         </svg>
                     </a>
                     <!-- next 1 -->
-                    <a href="#" class="inline-flex justify-center border  p-1 mr-1 text-gray-500 rounded cursor-pointer hover:text-gray-900 hover:bg-gray-200">
+                    <a href="#" id = "next" class="inline-flex justify-center border  p-1 mr-1 text-gray-500 rounded cursor-pointer hover:text-gray-900 hover:bg-gray-200">
                         <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                             <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
                         </svg>
                     </a>
                     <!-- next 2 -->
-                    <a href="#" class="inline-flex justify-center border  p-1 mr-2 text-gray-500 rounded cursor-pointer hover:text-gray-900 hover:bg-gray-200">
+                    <a href="#" id = "jump_next" class="inline-flex justify-center border  p-1 mr-2 text-gray-500 rounded cursor-pointer hover:text-gray-900 hover:bg-gray-200">
                         <svg class="w-5 h-5" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path fill-rule="evenodd" clip-rule="evenodd" d="M2.14645 11.1464C1.95118 11.3417 1.95118 11.6583 2.14645 11.8536C2.34171 12.0488 2.65829 12.0488 2.85355 11.8536L6.85355 7.85355C7.04882 7.65829 7.04882 7.34171 6.85355 7.14645L2.85355 3.14645C2.65829 2.95118 2.34171 2.95118 2.14645 3.14645C1.95118 3.34171 1.95118 3.65829 2.14645 3.85355L5.79289 7.5L2.14645 11.1464ZM8.14645 11.1464C7.95118 11.3417 7.95118 11.6583 8.14645 11.8536C8.34171 12.0488 8.65829 12.0488 8.85355 11.8536L12.8536 7.85355C13.0488 7.65829 13.0488 7.34171 12.8536 7.14645L8.85355 3.14645C8.65829 2.95118 8.34171 2.95118 8.14645 3.14645C7.95118 3.34171 7.95118 3.65829 8.14645 3.85355L11.7929 7.5L8.14645 11.1464Z" fill="#6b7280" />
                         </svg>
                     </a>
-                    <span class="text-sm font-normal text-gray-500 ">Page <span class="font-semibold text-gray-900 "> 1 of 1 </span>| <span class="text-sm font-normal text-gray-500 pr-1 ">Go to Page</span></span>
-                    <input type="text" id="first_name" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-md focus:ring-gray-500 focus:border-gray-500 block w-7 h-7 px-1" placeholder="1">
+                    <span class="text-sm font-normal text-gray-500 ">Page <span id = "page_locator" class="font-semibold text-gray-900 "> 1 of 1 </span>| <span class="text-sm font-normal text-gray-500 pr-1 ">Go to Page</span></span>
+                    <input type="text" id="page_num_text" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-md focus:ring-gray-500 focus:border-gray-500 block w-7 h-7 px-1" placeholder="1" value = "1">
 
                 </div>
             </div>
         </div>
     </div>
 </main>
+
+<?php
+    echo "<script> var pagesNum = []; var lastPageNumber = ".$num_pages."</script>";
+    foreach ($pages_name as $p_name) {
+        echo '<script>pagesNum.push("' . $p_name . '");</script>';
+    }
+?>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+    
+        var prev = document.getElementById('prev');
+        var next = document.getElementById('next');
+        var pageLocator = document.getElementById("page_locator");
+        var currPageInput = document.getElementById('page_num_text');
+
+        var currPage = page_num_text.value;
+        var currPageName = 'page' + currPage;
+        // PAGE 1 DEAFULT DISPLAY
+            var page1 = document.getElementById("page1");
+            page1.removeAttribute("style");
+
+        console.log(pagesNum);
+        console.log('pages: ', lastPageNumber);
+
+        // Update the page locator
+        pageLocator.textContent = "1 of " + lastPageNumber;
+
+
+        prev.addEventListener('click', function(event) {
+            var currPageInput = document.getElementById('page_num_text');
+            var currPage = page_num_text.value;
+            var currPageName = 'page' + currPage;
+
+            var intendedPage;
+            // Current page element
+            var currPageElement = document.getElementById(currPageName);
+
+            // Prevent the default action of the link (i.e., navigating to href)
+            event.preventDefault();      
+            console.log('prev clicked');   
+
+            // If already in firstpage make it disable
+            if(parseInt(currPage) === 1){
+                return;
+            }
+
+
+            // Disable the anchor element
+            next.removeAttribute('href');
+            next.disabled = true;
+
+            // Predicting the intended page
+            console.log('curr page: ', currPage);
+            console.log('curr pagename: ', currPageName)
+            intendedPage = parseInt(currPage) - 1;
+            console.log('intended page: ', intendedPage)
+            console.log('redirecting to page: ', pagesNum[intendedPage]);
+
+            var intendedPageName = pagesNum[intendedPage];
+            var intendedPageElement = document.getElementById(intendedPageName);
+
+            // Hide the current page
+            currPageElement.setAttribute("style", "display: none;");
+
+            // Show intended page
+            intendedPageElement.removeAttribute("style");
+
+            // Update page text holder
+            currPageInput.value = intendedPage;
+
+            // Update the page locator
+            pageLocator.textContent = intendedPage + " of " + lastPageNumber;
+        });
+
+        next.addEventListener('click', function(event) {
+            var currPageInput = document.getElementById('page_num_text');
+            var currPage = page_num_text.value;
+            var currPageName = 'page' + currPage;
+
+            var intendedPage;
+            // Current page element
+            var currPageElement = document.getElementById(currPageName);
+
+            // Prevent the default action of the link (i.e., navigating to href)
+            event.preventDefault();      
+            console.log('next clicked');   
+
+            // If already in last page make it disable
+            if(parseInt(currPage) === lastPageNumber){
+                return;
+            }
+
+            // Disable the anchor element
+            next.removeAttribute('href');
+            next.disabled = true;
+
+            // Predicting the intended page
+            console.log('curr page: ', currPage);
+            console.log('curr pagename: ', currPageName)
+            intendedPage = parseInt(currPage) + 1;
+            console.log('intended page: ', intendedPage)
+            console.log('redirecting to page: ', pagesNum[intendedPage]);
+
+            var intendedPageName = pagesNum[intendedPage];
+            var intendedPageElement = document.getElementById(intendedPageName);
+
+            // Hide the current page
+            currPageElement.setAttribute("style", "display: none;");
+
+            // Show intended page
+            intendedPageElement.removeAttribute("style");
+
+            // Update page text holder
+            currPageInput.value = intendedPage;
+
+            // Update the page locator
+            pageLocator.textContent = intendedPage + " of " + lastPageNumber;
+        });
+
+        currPageInput.addEventListener("input", function() {
+            var inputPage= currPageInput.value.trim(); // Trim any leading or trailing spaces
+            var pageLocator = document.getElementById("page_locator");
+            var content = pageLocator.textContent.trim(); // Get the text content and remove leading/trailing spaces
+            var firstDigit = content.match(/\d/);
+            var currPage = firstDigit[0];
+            var currPageName = "page" + currPage;
+
+                
+            if (currPageInput !== "") {
+                // Process the input data
+                console.log("Input data:", currPageInput.value);
+
+                var intendedPage;
+                // Current page element
+                var currPageElement = document.getElementById(currPageName); 
+
+                // If already in last page make it disable
+                if(currPageInput.value > lastPageNumber){
+                    currPageInput.value = lastPageNumber;
+                }
+
+                // If already in first page make it disable
+                if(parseInt(currPageInput.value) < 1){
+                    currPageInput.value = 1;
+                }
+
+                // Disable the anchor element
+                next.removeAttribute('href');
+                next.disabled = true;
+
+                // Predicting the intended page
+                console.log('curr page: ', currPage);
+                console.log('curr pagename: ', currPageName)
+                intendedPage = currPageInput.value;
+                console.log('intended page: ', intendedPage)
+                console.log('redirecting to page: ', 'page' + intendedPage);
+
+                var intendedPageName = 'page' + intendedPage;
+                var intendedPageElement = document.getElementById(intendedPageName);
+
+                // Hide the current page
+                currPageElement.setAttribute("style", "display: none;");
+
+                // Show intended page
+                intendedPageElement.removeAttribute("style");
+
+                // Update page text holder
+                currPageInput.placeholder = intendedPage;
+
+                // Update the page locator
+                pageLocator.textContent = intendedPage + " of " + lastPageNumber;
+
+                currPage = currPageInput.value;
+                currPageName = 'page' + currPage;
+            } else {
+                // No input data
+                console.log("No input data");
+            }
+        });
+    });
+</script>
