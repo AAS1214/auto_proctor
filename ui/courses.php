@@ -285,6 +285,11 @@ if (isset($_GET['course_id'])) {
                                 }
                                 echo "num of pages: " . $num_pages . "</br>";
 
+                                // If number is 0
+                                if ($num_pages === 0){
+                                    $num_pages = 1;
+                                }
+
 
                                 // Generate page name for the element
                                 $pages_name = array();
