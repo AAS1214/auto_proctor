@@ -614,6 +614,11 @@ $num_of_courses = count($course_ids);
                                     $num_pages++;
                                 }
 
+                                // If number is 0
+                                if ($num_pages === 0){
+                                    $num_pages = 1;
+                                }
+
                                 // Generate page name for the element
                                 $pages_name = array();
                                 $pages_name[] = $pagename; // Skipping the first array
