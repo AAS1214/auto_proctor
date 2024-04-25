@@ -119,6 +119,9 @@ if (isset($_GET['course_id'])) {
     }, $course_ids));
 
     echo "<script>console.log('quiz_records: ', " . json_encode($quiz_records) . ");</script>";
+
+    // ======= NUMBER OF ALL QUIZZES
+    $num_of_all_quizzes= count($ap_quiz_records);
 }
 ?>
 <main>
@@ -268,6 +271,35 @@ if (isset($_GET['course_id'])) {
                             <tbody class="bg-white " id="quizTableBody">
                                 <?php
                                 
+                                echo "num of quizzes: " . $num_of_all_quizzes . "</br>";
+
+                                // Predict total num of pages
+                                $num_pages = $num_of_all_quizzes / 2;
+                                echo "num of pages: " . $num_pages . "</br>";
+ 
+                                // If number is not even
+                                if (is_float($num_pages)) {
+                                    $float_page = $num_pages;
+                                    $num_pages = (int)$float_page;
+                                    $num_pages++;
+                                }
+                                echo "num of pages: " . $num_pages . "</br>";
+
+
+                                // Generate page name for the element
+                                $pages_name = array();
+                                $pages_name[] = $pagename; // Skipping the first array
+                                // Create name of the section per page
+                                for ($i = 1; $i <= $num_pages; $i++) {
+                                    $pagenum++;
+                                    $pagename = "page" . $pagenum;
+
+                                    $pages_name[] = $pagename;
+
+                                }
+
+                                print_r($pages_name);
+                                 
                                 foreach ($ap_quiz_records as $record) {
                                     $sql = "SELECT *
                                                 FROM {quiz}
@@ -297,6 +329,7 @@ if (isset($_GET['course_id'])) {
 
                                     }
 
+                                    $page_turner;
                                     foreach ($quiz_record as $quiz) {
                                         $timestamp = $quiz->timecreated;
                                         $formatted_date = date("d M Y", $timestamp);
@@ -324,9 +357,19 @@ if (isset($_GET['course_id'])) {
                                             $quiz_status = "In progress";
                                         }
 
+                                        $quiz_counter++;
+
+                                        if ($quiz_counter === 3){
+                                            $quiz_counter = 1;
+                                        }
+                                        if ($quiz_counter === 1){
+                                            $page_turner++;
+                                        }
+                                        
+
                                         echo "<script>console.log('date: ');</script>";
                                         echo
-                                        '<tr class="shadow">
+                                            '<tr name = "'. $pages_name[$page_turner] .'" style = "display: none;" class="shadow">
                                                         <td class="p-4 text-sm font-semibold  whitespace-nowrap text-gray-800">
                                                             <h1>' . $quiz->name . '</h1>
                                                             <span class="font-normal text-[10px] text-center">
@@ -355,39 +398,11 @@ if (isset($_GET['course_id'])) {
                                                             </span>
                                                         </button>
                                                         </td>
-                                                    </tr>
-                                                ';
+                                            </tr>
+                                        ';
                                     }
                                 }
                                 ?>
-                                <!-- 2 -->
-                                <!-- <tr class="bg-gray-100">
-                                                    <td class="p-4 text-sm font-semibold  whitespace-nowrap text-gray-800">
-                                                        <h1>TEST NAME #2</h1>
-                                                        <span class="font-normal text-[10px] text-center">
-                                                            <a href="" class="">SHARE</a>
-                                                            <a href="" class="pl-10">PREVIEW</a>
-                                                        </span>
-                                                    </td>
-                                                    <td class="p-4 text-sm font-normal text-gray-800 whitespace-nowrap ">
-
-                                                    </td>
-                                                    <td class="p-4 text-sm font-normal text-gray-500 whitespace-nowrap ">
-                                                        08 Dec 2023
-                                                    </td>
-                                                    <td class="p-4 text-sm font-normal text-gray-500 whitespace-nowrap ">
-                                                        course 2
-                                                    </td>
-                                                    <td class=" whitespace-nowrap">
-                                                        <span class="bg-white text-gray-500 text-xs font-medium mr-2 px-3 py-1 rounded-md border">
-                                                            <a href="quizSetting.php">SETTINGS</a>
-                                                        </span>
-                                                        <span class="bg-[#0061A8] text-gray-100 text-xs font-medium mr-2 px-3 py-1 rounded-md   ">
-                                                            <a href="">RESULTS</a>
-                                                        </span>
-                                                    </td>
-                                                </tr> -->
-
                             </tbody>
                         </table>
                     </div>
@@ -402,25 +417,32 @@ if (isset($_GET['course_id'])) {
             <div class="flex items-center space-x-3">
                 <div class="flex items-center mb-4 sm:mb-0 gap-1">
                     <!-- previous 2 -->
-                    <a href="#" class="inline-flex border justify-center p-1 text-gray-500 rounded cursor-pointer hover:text-gray-900 hover:bg-gray-200">
+                    <a href="#" id = "prev" class="inline-flex border justify-center p-1 text-gray-500 rounded cursor-pointer hover:text-gray-900 hover:bg-gray-200">
                         <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                             <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd"></path>
                         </svg>
                     </a>
                     <!-- next 1 -->
-                    <a href="#" class="inline-flex justify-center border  p-1 mr-1 text-gray-500 rounded cursor-pointer hover:text-gray-900 hover:bg-gray-200">
+                    <a href="#" id = "next" class="inline-flex justify-center border  p-1 mr-1 text-gray-500 rounded cursor-pointer hover:text-gray-900 hover:bg-gray-200">
                         <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                             <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
                         </svg>
                     </a>
-                    <span class="text-sm font-normal text-gray-500 ">Page <span class="font-semibold text-gray-900 "> 1 of 1 </span>| <span class="text-sm font-normal text-gray-500 pr-1 ">Go to Page</span></span>
-                    <input type="text" id="first_name" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-md focus:ring-gray-500 focus:border-gray-500 block w-7 h-7 px-1" placeholder="1">
+                    <span class="text-sm font-normal text-gray-500 ">Page <span class="font-semibold text-gray-900 " id = "page_locator"> 1 of 1 </span>| <span class="text-sm font-normal text-gray-500 pr-1 ">Go to Page</span></span>
+                    <input type="text" id="page_num_text" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-md focus:ring-gray-500 focus:border-gray-500 block w-7 h-7 px-1" placeholder="1" value = "1">
 
                 </div>
             </div>
         </div>
     </div>
 </main>
+
+<?php
+    echo "<script> var pagesNum = []; var lastPageNumber = ".$num_pages."</script>";
+    foreach ($pages_name as $p_name) {
+        echo '<script>pagesNum.push("' . $p_name . '");</script>';
+    }
+?>
 <script>
     document.addEventListener("DOMContentLoaded", function() {
         // Select all elements with class 'archiveThis'
@@ -614,97 +636,275 @@ if (isset($_GET['course_id'])) {
     });
 
     function myFunction() {
-    var input, filter, table, tr, td, i, j, txtValue;
-    input = document.getElementById("myInput");
-    filter = input.value.toUpperCase();
-    table = document.querySelector("#quizTableBody");
-    tr = table.getElementsByTagName("tr");
-    for (i = 0; i < tr.length; i++) {
-        let found = false;
-        for (j = 0; j < tr[i].cells.length; j++) {
-            td = tr[i].cells[j];
-            if (td) {
-                txtValue = td.textContent || td.innerText;
-                if (txtValue.toUpperCase().indexOf(filter) > -1) {
-                    found = true;
-                    break; // No need to check other cells if a match is found in one cell
+        var input, filter, table, tr, td, i, j, txtValue;
+        input = document.getElementById("myInput");
+        filter = input.value.toUpperCase();
+        table = document.querySelector("#quizTableBody");
+        tr = table.getElementsByTagName("tr");
+        for (i = 0; i < tr.length; i++) {
+            let found = false;
+            for (j = 0; j < tr[i].cells.length; j++) {
+                td = tr[i].cells[j];
+                if (td) {
+                    txtValue = td.textContent || td.innerText;
+                    if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                        found = true;
+                        break; // No need to check other cells if a match is found in one cell
+                    }
                 }
             }
+            if (found) {
+                tr[i].style.display = ""; // Display the row if the search term matches in any cell
+            } else {
+                tr[i].style.display = "none"; // Hide the row if the search term doesn't match in any cell
+            }
         }
-        if (found) {
-            tr[i].style.display = ""; // Display the row if the search term matches in any cell
+    }
+
+    function searchForComplete() {
+        var checkbox = document.getElementById("fitbit");
+        if (checkbox.checked) {
+            checkbox.checked = false;
         } else {
-            tr[i].style.display = "none"; // Hide the row if the search term doesn't match in any cell
+            // If checkbox is unchecked, you can perform any additional actions here
+            console.log("Checkbox is unchecked");
         }
-    }
-}
 
-function searchForComplete() {
-    var checkbox = document.getElementById("fitbit");
-    if (checkbox.checked) {
-        checkbox.checked = false;
-    } else {
-        // If checkbox is unchecked, you can perform any additional actions here
-        console.log("Checkbox is unchecked");
-    }
-
-    var checkbox = document.getElementById("apple");
-    if (checkbox.checked) {
-        var table = document.querySelector("#quizTableBody");
-        var tr = table.getElementsByTagName("tr");
-        for (var i = 0; i < tr.length; i++) {
-            var cells = tr[i].getElementsByTagName("td");
-            var found = false;
-            for (var j = 0; j < cells.length; j++) {
-                var txtValue = cells[j].textContent || cells[j].innerText;
-                if (txtValue.toUpperCase().includes("COMPLETE")) {
-                    found = true;
-                    break;
+        var checkbox = document.getElementById("apple");
+        if (checkbox.checked) {
+            var table = document.querySelector("#quizTableBody");
+            var tr = table.getElementsByTagName("tr");
+            for (var i = 0; i < tr.length; i++) {
+                var cells = tr[i].getElementsByTagName("td");
+                var found = false;
+                for (var j = 0; j < cells.length; j++) {
+                    var txtValue = cells[j].textContent || cells[j].innerText;
+                    if (txtValue.toUpperCase().includes("COMPLETE")) {
+                        found = true;
+                        break;
+                    }
+                }
+                if (found) {
+                    tr[i].style.display = ""; // Display the row if "complete" is found in any cell
+                } else {
+                    tr[i].style.display = "none"; // Hide the row if "complete" is not found in any cell
                 }
             }
-            if (found) {
-                tr[i].style.display = ""; // Display the row if "complete" is found in any cell
-            } else {
-                tr[i].style.display = "none"; // Hide the row if "complete" is not found in any cell
-            }
+        } else {
+            myFunction(); // Call the default search function if the checkbox is unchecked
         }
-    } else {
-        myFunction(); // Call the default search function if the checkbox is unchecked
-    }
-}
-
-function searchForInProgress() {
-    var checkbox = document.getElementById("apple");
-    if (checkbox.checked) {
-        checkbox.checked = false;
-    } else {
-        // If checkbox is unchecked, you can perform any additional actions here
-        console.log("Checkbox is unchecked");
     }
 
-    var checkbox = document.getElementById("fitbit");
-    if (checkbox.checked) {
-        var table = document.querySelector("#quizTableBody");
-        var tr = table.getElementsByTagName("tr");
-        for (var i = 0; i < tr.length; i++) {
-            var cells = tr[i].getElementsByTagName("td");
-            var found = false;
-            for (var j = 0; j < cells.length; j++) {
-                var txtValue = cells[j].textContent || cells[j].innerText;
-                if (txtValue.toUpperCase().includes("IN PROGRESS")) {
-                    found = true;
-                    break;
+    function searchForInProgress() {
+        var checkbox = document.getElementById("apple");
+        if (checkbox.checked) {
+            checkbox.checked = false;
+        } else {
+            // If checkbox is unchecked, you can perform any additional actions here
+            console.log("Checkbox is unchecked");
+        }
+
+        var checkbox = document.getElementById("fitbit");
+        if (checkbox.checked) {
+            var table = document.querySelector("#quizTableBody");
+            var tr = table.getElementsByTagName("tr");
+            for (var i = 0; i < tr.length; i++) {
+                var cells = tr[i].getElementsByTagName("td");
+                var found = false;
+                for (var j = 0; j < cells.length; j++) {
+                    var txtValue = cells[j].textContent || cells[j].innerText;
+                    if (txtValue.toUpperCase().includes("IN PROGRESS")) {
+                        found = true;
+                        break;
+                    }
+                }
+                if (found) {
+                    tr[i].style.display = ""; // Display the row if "in progress" is found in any cell
+                } else {
+                    tr[i].style.display = "none"; // Hide the row if "in progress" is not found in any cell
                 }
             }
-            if (found) {
-                tr[i].style.display = ""; // Display the row if "in progress" is found in any cell
-            } else {
-                tr[i].style.display = "none"; // Hide the row if "in progress" is not found in any cell
-            }
+        } else {
+            myFunction(); // Call the default search function if the checkbox is unchecked
         }
-    } else {
-        myFunction(); // Call the default search function if the checkbox is unchecked
     }
-}
+
+
+// PAGINATION
+    var displayElements = document.querySelectorAll("tr[name='page1']");
+    var prev = document.getElementById('prev');
+    var next = document.getElementById('next');
+    var pageLocator = document.getElementById("page_locator");
+    var currPageInput = document.getElementById('page_num_text');
+    
+
+    // DEFAULT SHOW PAGE 1
+    for(var i = 0; i < displayElements.length; i++){
+        displayElements[i].removeAttribute("style");
+    }
+
+    // Update the page locator
+    pageLocator.textContent = "1 of " + lastPageNumber;
+
+    var currPageInput = document.getElementById('page_num_text');
+    var currPage = page_num_text.value;
+    var currPageName = 'page' + currPage;
+
+    prev.addEventListener('click', function(event) {
+        var currPageInput = document.getElementById('page_num_text');
+        var currPage = page_num_text.value;
+        var currPageName = 'page' + currPage;
+
+        var intendedPage;
+
+        // Prevent the default action of the link (i.e., navigating to href)
+        event.preventDefault();      
+        console.log('prev clicked');   
+
+        // If already in firstpage make it disable
+        if(parseInt(currPage) === 1){
+            return;
+        }
+
+        // Disable the anchor element
+        prev.removeAttribute('href');
+        prev.disabled = true;
+
+        // Predicting the intended page
+        console.log('curr page: ', currPage);
+        console.log('curr pagename: ', currPageName)
+        intendedPage = parseInt(currPage) - 1;
+        console.log('intended page: ', intendedPage)
+        console.log('redirecting to page: ', pagesNum[intendedPage]);
+
+        // Hide curr page
+        var displayElements = document.querySelectorAll("tr[name='" + pagesNum[currPage] + "']");
+        for(var i = 0; i < displayElements.length; i++){
+            displayElements[i].setAttribute("style", "display: none;");
+        }
+
+        // Display intended page
+        var displayElements = document.querySelectorAll("tr[name='" + pagesNum[intendedPage] + "']");
+
+        for(var i = 0; i < displayElements.length; i++){
+            displayElements[i].removeAttribute("style");
+        }
+
+        // Update page text holder
+        currPageInput.value = intendedPage;
+
+        // Update the page locator
+        pageLocator.textContent = intendedPage + " of " + lastPageNumber;
+
+        currPageName = "page" + intendedPage;
+    }); 
+
+    next.addEventListener('click', function(event) {
+        var currPageInput = document.getElementById('page_num_text');
+        var currPage = page_num_text.value;
+        var currPageName = 'page' + currPage;
+
+        var intendedPage;
+
+        // Prevent the default action of the link (i.e., navigating to href)
+        event.preventDefault();      
+        console.log('next clicked');   
+
+        // If already in lastpage make it disable
+        if(parseInt(currPage) === lastPageNumber){
+            return;
+        }
+
+        // Disable the anchor element
+        next.removeAttribute('href');
+        next.disabled = true;
+
+        // Predicting the intended page
+        console.log('curr page: ', currPage);
+        console.log('curr pagename: ', currPageName)
+        intendedPage = parseInt(currPage) + 1;
+        console.log('intended page: ', intendedPage)
+        console.log('redirecting to page: ', pagesNum[intendedPage]);
+
+        // Hide curr page
+        var displayElements = document.querySelectorAll("tr[name='" + pagesNum[currPage] + "']");
+        for(var i = 0; i < displayElements.length; i++){
+            displayElements[i].setAttribute("style", "display: none;");
+        }
+
+        // Display intended page
+        var displayElements = document.querySelectorAll("tr[name='" + pagesNum[intendedPage] + "']");
+
+        for(var i = 0; i < displayElements.length; i++){
+            displayElements[i].removeAttribute("style");
+        }
+
+        // Update page text holder
+        currPageInput.value = intendedPage;
+
+        // Update the page locator
+        pageLocator.textContent = intendedPage + " of " + lastPageNumber;
+
+        currPageName = "page" + intendedPage;
+    });  
+
+    currPageInput.addEventListener("input", function() {
+        var inputPage= currPageInput.value.trim(); // Trim any leading or trailing spaces
+        var pageLocator = document.getElementById("page_locator");
+        var content = pageLocator.textContent.trim(); // Get the text content and remove leading/trailing spaces
+        var firstDigit = content.match(/\d/);
+        var currPage = firstDigit[0];
+        var currPageName = "page" + currPage;
+
+        if (currPageInput !== "") {
+            // Process the input data
+            console.log("Input data:", currPageInput.value);
+
+            var intendedPage;
+            // Current page element
+
+            // If already in last page make it disable
+            if(currPageInput.value > lastPageNumber){
+                currPageInput.value = lastPageNumber;
+            }
+
+            // If already in first page make it disable
+            if(parseInt(currPageInput.value) < 1){
+                currPageInput.value = 1;
+            }
+
+            // Predicting the intended page
+            console.log('curr page: ', currPage);
+            console.log('curr pagename: ', currPageName)
+            intendedPage = currPageInput.value;
+            console.log('intended page: ', intendedPage)
+            console.log('redirecting to page: ', 'page' + intendedPage);
+
+            // Hide the current page
+            var hideElements = document.querySelectorAll("tr[name='" + currPageName + "']");
+            for(var i = 0; i < hideElements.length; i++){
+                hideElements[i].setAttribute("style", "display: none;");
+            }
+
+            // Dsiplay the current page
+            var displayElements = document.querySelectorAll("tr[name='" + pagesNum[intendedPage] + "']");
+            for(var i = 0; i < displayElements.length; i++){
+                displayElements[i].removeAttribute("style");
+            }
+
+            // Update page text holder
+            currPageInput.placeholder = intendedPage;
+
+            // Update the page locator
+            pageLocator.textContent = intendedPage + " of " + lastPageNumber;
+
+            currPage = currPageInput.value;
+            currPageName = 'page' + currPage;
+        }
+        else{
+            // No input data
+            console.log("No input data");
+        }
+    });
 
 </script>
