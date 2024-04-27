@@ -271,11 +271,11 @@ if (isset($_GET['course_id'])) {
                             <tbody class="bg-white " id="quizTableBody">
                                 <?php
                                 
-                                echo "num of quizzes: " . $num_of_all_quizzes . "</br>";
+                                //echo "num of quizzes: " . $num_of_all_quizzes . "</br>";
 
                                 // Predict total num of pages
-                                $num_pages = $num_of_all_quizzes / 2;
-                                echo "num of pages: " . $num_pages . "</br>";
+                                $num_pages = $num_of_all_quizzes / 30;
+                                //echo "num of pages: " . $num_pages . "</br>";
  
                                 // If number is not even
                                 if (is_float($num_pages)) {
@@ -283,7 +283,7 @@ if (isset($_GET['course_id'])) {
                                     $num_pages = (int)$float_page;
                                     $num_pages++;
                                 }
-                                echo "num of pages: " . $num_pages . "</br>";
+                                //echo "num of pages: " . $num_pages . "</br>";
 
                                 // If number is 0
                                 if ($num_pages === 0){
@@ -303,7 +303,7 @@ if (isset($_GET['course_id'])) {
 
                                 }
 
-                                print_r($pages_name);
+                                //print_r($pages_name);
                                  
                                 foreach ($ap_quiz_records as $record) {
                                     $sql = "SELECT *
@@ -364,7 +364,7 @@ if (isset($_GET['course_id'])) {
 
                                         $quiz_counter++;
 
-                                        if ($quiz_counter === 3){
+                                        if ($quiz_counter === 31){
                                             $quiz_counter = 1;
                                         }
                                         if ($quiz_counter === 1){
@@ -420,7 +420,7 @@ if (isset($_GET['course_id'])) {
             <div class="flex items-center mb-4 sm:mb-0">
             </div>
             <div class="flex items-center space-x-3">
-                <div class="flex items-center mb-4 sm:mb-0 gap-1">
+                <div id = "pagination_controls" class="flex items-center mb-4 sm:mb-0 gap-1">
                     <!-- previous 2 -->
                     <a href="#" id = "prev" class="inline-flex border justify-center p-1 text-gray-500 rounded cursor-pointer hover:text-gray-900 hover:bg-gray-200">
                         <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
@@ -483,6 +483,214 @@ if (isset($_GET['course_id'])) {
 
                 // Here you can perform further actions like sending the quizId via AJAX
             });
+        });
+
+        // PAGINATION
+            var displayElements = document.querySelectorAll("tr[name='page1']");
+            var prev = document.getElementById('prev');
+            var next = document.getElementById('next');
+            var pageLocator = document.getElementById("page_locator");
+            var currPageInput = document.getElementById('page_num_text');
+            
+
+            // DEFAULT SHOW PAGE 1
+            for(var i = 0; i < displayElements.length; i++){
+                displayElements[i].removeAttribute("style");
+            }
+
+            // Update the page locator
+            pageLocator.textContent = "1 of " + lastPageNumber;
+
+            var currPageInput = document.getElementById('page_num_text');
+            var currPage = page_num_text.value;
+            var currPageName = 'page' + currPage;
+
+            prev.addEventListener('click', function(event) {
+                var currPageInput = document.getElementById('page_num_text');
+                var currPage = page_num_text.value;
+                var currPageName = 'page' + currPage;
+
+                var intendedPage;
+
+                // Prevent the default action of the link (i.e., navigating to href)
+                event.preventDefault();      
+                console.log('prev clicked');   
+
+                // If already in firstpage make it disable
+                if(parseInt(currPage) === 1){
+                    return;
+                }
+
+                // Disable the anchor element
+                prev.removeAttribute('href');
+                prev.disabled = true;
+
+                // Predicting the intended page
+                console.log('curr page: ', currPage);
+                console.log('curr pagename: ', currPageName)
+                intendedPage = parseInt(currPage) - 1;
+                console.log('intended page: ', intendedPage)
+                console.log('redirecting to page: ', pagesNum[intendedPage]);
+
+                // If the page text box is empty or blank
+                if (currPage === ""){
+                    intendedPage = 1;
+                }
+
+                // Hide curr page
+                var displayElements = document.querySelectorAll("tr[name='" + pagesNum[currPage] + "']");
+                for(var i = 0; i < displayElements.length; i++){
+                    displayElements[i].setAttribute("style", "display: none;");
+                }
+
+                // Display intended page
+                var displayElements = document.querySelectorAll("tr[name='" + pagesNum[intendedPage] + "']");
+
+                for(var i = 0; i < displayElements.length; i++){
+                    displayElements[i].removeAttribute("style");
+                }
+
+                // Update page text holder
+                currPageInput.value = intendedPage;
+
+                // Update the page locator
+                pageLocator.textContent = intendedPage + " of " + lastPageNumber;
+
+                // Update input placeholder
+                currPageInput.placeholder = intendedPage;
+
+                currPageName = "page" + intendedPage;
+            }); 
+
+            next.addEventListener('click', function(event) {
+                var currPageInput = document.getElementById('page_num_text');
+                var currPage = page_num_text.value;
+                var currPageName = 'page' + currPage;
+
+                var intendedPage;
+
+                // Prevent the default action of the link (i.e., navigating to href)
+                event.preventDefault();      
+                console.log('next clicked');   
+
+                // If already in lastpage make it disable
+                if(parseInt(currPage) === lastPageNumber){
+                    return;
+                }
+
+                // Disable the anchor element
+                next.removeAttribute('href');
+                next.disabled = true;
+
+                // Predicting the intended page
+                console.log('curr page: ', currPage);
+                console.log('curr pagename: ', currPageName)
+                intendedPage = parseInt(currPage) + 1;
+                console.log('intended page: ', intendedPage)
+                console.log('redirecting to page: ', pagesNum[intendedPage]);
+
+                // If the page text box is empty or blank
+                if (currPage === ""){
+                    intendedPage = lastPageNumber;
+                }
+
+                // Hide curr page
+                var displayElements = document.querySelectorAll("tr[name='" + pagesNum[currPage] + "']");
+                for(var i = 0; i < displayElements.length; i++){
+                    displayElements[i].setAttribute("style", "display: none;");
+                }
+
+                // Display intended page
+                var displayElements = document.querySelectorAll("tr[name='" + pagesNum[intendedPage] + "']");
+
+                for(var i = 0; i < displayElements.length; i++){
+                    displayElements[i].removeAttribute("style");
+                }
+
+                // Update page text holder
+                currPageInput.value = intendedPage;
+
+                // Update the page locator
+                pageLocator.textContent = intendedPage + " of " + lastPageNumber;
+
+                // Update input placeholder
+                currPageInput.placeholder = intendedPage;
+
+                currPageName = "page" + intendedPage;
+            });  
+
+            currPageInput.addEventListener("input", function() {
+                var inputPage= currPageInput.value.trim(); // Trim any leading or trailing spaces
+                var pageLocator = document.getElementById("page_locator");
+                var content = pageLocator.textContent.trim(); // Get the text content and remove leading/trailing spaces
+                var firstDigit = content.match(/\d/);
+                var currPage = firstDigit[0];
+                var currPageName = "page" + currPage;
+
+                if (currPageInput !== "") {
+                    // Process the input data
+                    console.log("Input data:", currPageInput.value);
+
+                    var intendedPage;
+                    // Current page element
+
+                    // If already in last page make it disable
+                    if(currPageInput.value > lastPageNumber){
+                        currPageInput.value = lastPageNumber;
+                    }
+
+                    // If already in first page make it disable
+                    if(parseInt(currPageInput.value) < 1){
+                        currPageInput.value = 1;
+                    }
+
+                    // Predicting the intended page
+                    console.log('curr page: ', currPage);
+                    console.log('curr pagename: ', currPageName)
+                    intendedPage = currPageInput.value;
+                    console.log('intended page: ', intendedPage)
+                    console.log('redirecting to page: ', 'page' + intendedPage);
+
+                    // Hide the current page
+                    for (var i = 0; i < pagesNum.length; i++) {
+                       if (pagesNum[i] != pagesNum[intendedPage]){
+                        console.log('pages to hide: ',pagesNum[i]);
+                        var hideElements = document.querySelectorAll("tr[name='" + pagesNum[i] + "']");
+                            for(var j = 0; j < hideElements.length; j++){
+                                hideElements[j].setAttribute("style", "display: none;");
+                            }
+                       }
+                    }
+
+                    // Dsiplay the current page
+                    var displayElements = document.querySelectorAll("tr[name='" + pagesNum[intendedPage] + "']");
+                    for(var i = 0; i < displayElements.length; i++){
+                        displayElements[i].removeAttribute("style");
+                    }
+
+                    // Update page text holder
+                    currPageInput.placeholder = intendedPage;
+
+                    // Update the page locator
+                    pageLocator.textContent = intendedPage + " of " + lastPageNumber;
+
+                    currPage = currPageInput.value;
+                    currPageName = 'page' + currPage;
+                }
+                else{
+                    // No input data
+                    console.log("No input data");
+                }
+            });
+        // ===
+
+        // Preventing the search input to be submitted
+        searchBox = document.getElementById("myInput");
+        searchBox.addEventListener("keydown", function(event) {
+            if (event.key === "Enter") {
+                event.preventDefault(); // Prevent form submission when Enter is pressed
+                console.log("Input value:", input.value); // You can do whatever you want with the value here
+            }
         });
     });
 
@@ -664,6 +872,34 @@ if (isset($_GET['course_id'])) {
                 tr[i].style.display = "none"; // Hide the row if the search term doesn't match in any cell
             }
         }
+
+        // PAGINATION
+            var paginationControls = document.getElementById('pagination_controls');
+            var pageInputPlaceholder = document.getElementById('page_num_text');
+            var currPageInput = document.getElementById('page_num_text');
+
+            // Hide the pagination control
+            paginationControls.setAttribute("style", "display: none;");
+
+            // If input is emptied
+            // Go back to the recent page
+            if (input.value === ""){
+                for (i = 0; i < tr.length; i++) {
+                    // Loop through all td elements in the row
+                    var found = false;
+                    td = tr[i].getElementsByTagName("td");
+
+                    tr[i].style.display = "none"; // Hide the row if the search query is not found in any column        
+                }
+                paginationControls.removeAttribute("style");
+
+                var backToPage = "page" + pageInputPlaceholder.placeholder;
+                var displayElements = document.querySelectorAll("tr[name='" + backToPage + "']");
+                for(var i = 0; i < displayElements.length; i++){
+                    displayElements[i].removeAttribute("style");
+                }
+            }
+        // ===
     }
 
     function searchForComplete() {
@@ -733,183 +969,4 @@ if (isset($_GET['course_id'])) {
             myFunction(); // Call the default search function if the checkbox is unchecked
         }
     }
-
-
-// PAGINATION
-    var displayElements = document.querySelectorAll("tr[name='page1']");
-    var prev = document.getElementById('prev');
-    var next = document.getElementById('next');
-    var pageLocator = document.getElementById("page_locator");
-    var currPageInput = document.getElementById('page_num_text');
-    
-
-    // DEFAULT SHOW PAGE 1
-    for(var i = 0; i < displayElements.length; i++){
-        displayElements[i].removeAttribute("style");
-    }
-
-    // Update the page locator
-    pageLocator.textContent = "1 of " + lastPageNumber;
-
-    var currPageInput = document.getElementById('page_num_text');
-    var currPage = page_num_text.value;
-    var currPageName = 'page' + currPage;
-
-    prev.addEventListener('click', function(event) {
-        var currPageInput = document.getElementById('page_num_text');
-        var currPage = page_num_text.value;
-        var currPageName = 'page' + currPage;
-
-        var intendedPage;
-
-        // Prevent the default action of the link (i.e., navigating to href)
-        event.preventDefault();      
-        console.log('prev clicked');   
-
-        // If already in firstpage make it disable
-        if(parseInt(currPage) === 1){
-            return;
-        }
-
-        // Disable the anchor element
-        prev.removeAttribute('href');
-        prev.disabled = true;
-
-        // Predicting the intended page
-        console.log('curr page: ', currPage);
-        console.log('curr pagename: ', currPageName)
-        intendedPage = parseInt(currPage) - 1;
-        console.log('intended page: ', intendedPage)
-        console.log('redirecting to page: ', pagesNum[intendedPage]);
-
-        // Hide curr page
-        var displayElements = document.querySelectorAll("tr[name='" + pagesNum[currPage] + "']");
-        for(var i = 0; i < displayElements.length; i++){
-            displayElements[i].setAttribute("style", "display: none;");
-        }
-
-        // Display intended page
-        var displayElements = document.querySelectorAll("tr[name='" + pagesNum[intendedPage] + "']");
-
-        for(var i = 0; i < displayElements.length; i++){
-            displayElements[i].removeAttribute("style");
-        }
-
-        // Update page text holder
-        currPageInput.value = intendedPage;
-
-        // Update the page locator
-        pageLocator.textContent = intendedPage + " of " + lastPageNumber;
-
-        currPageName = "page" + intendedPage;
-    }); 
-
-    next.addEventListener('click', function(event) {
-        var currPageInput = document.getElementById('page_num_text');
-        var currPage = page_num_text.value;
-        var currPageName = 'page' + currPage;
-
-        var intendedPage;
-
-        // Prevent the default action of the link (i.e., navigating to href)
-        event.preventDefault();      
-        console.log('next clicked');   
-
-        // If already in lastpage make it disable
-        if(parseInt(currPage) === lastPageNumber){
-            return;
-        }
-
-        // Disable the anchor element
-        next.removeAttribute('href');
-        next.disabled = true;
-
-        // Predicting the intended page
-        console.log('curr page: ', currPage);
-        console.log('curr pagename: ', currPageName)
-        intendedPage = parseInt(currPage) + 1;
-        console.log('intended page: ', intendedPage)
-        console.log('redirecting to page: ', pagesNum[intendedPage]);
-
-        // Hide curr page
-        var displayElements = document.querySelectorAll("tr[name='" + pagesNum[currPage] + "']");
-        for(var i = 0; i < displayElements.length; i++){
-            displayElements[i].setAttribute("style", "display: none;");
-        }
-
-        // Display intended page
-        var displayElements = document.querySelectorAll("tr[name='" + pagesNum[intendedPage] + "']");
-
-        for(var i = 0; i < displayElements.length; i++){
-            displayElements[i].removeAttribute("style");
-        }
-
-        // Update page text holder
-        currPageInput.value = intendedPage;
-
-        // Update the page locator
-        pageLocator.textContent = intendedPage + " of " + lastPageNumber;
-
-        currPageName = "page" + intendedPage;
-    });  
-
-    currPageInput.addEventListener("input", function() {
-        var inputPage= currPageInput.value.trim(); // Trim any leading or trailing spaces
-        var pageLocator = document.getElementById("page_locator");
-        var content = pageLocator.textContent.trim(); // Get the text content and remove leading/trailing spaces
-        var firstDigit = content.match(/\d/);
-        var currPage = firstDigit[0];
-        var currPageName = "page" + currPage;
-
-        if (currPageInput !== "") {
-            // Process the input data
-            console.log("Input data:", currPageInput.value);
-
-            var intendedPage;
-            // Current page element
-
-            // If already in last page make it disable
-            if(currPageInput.value > lastPageNumber){
-                currPageInput.value = lastPageNumber;
-            }
-
-            // If already in first page make it disable
-            if(parseInt(currPageInput.value) < 1){
-                currPageInput.value = 1;
-            }
-
-            // Predicting the intended page
-            console.log('curr page: ', currPage);
-            console.log('curr pagename: ', currPageName)
-            intendedPage = currPageInput.value;
-            console.log('intended page: ', intendedPage)
-            console.log('redirecting to page: ', 'page' + intendedPage);
-
-            // Hide the current page
-            var hideElements = document.querySelectorAll("tr[name='" + currPageName + "']");
-            for(var i = 0; i < hideElements.length; i++){
-                hideElements[i].setAttribute("style", "display: none;");
-            }
-
-            // Dsiplay the current page
-            var displayElements = document.querySelectorAll("tr[name='" + pagesNum[intendedPage] + "']");
-            for(var i = 0; i < displayElements.length; i++){
-                displayElements[i].removeAttribute("style");
-            }
-
-            // Update page text holder
-            currPageInput.placeholder = intendedPage;
-
-            // Update the page locator
-            pageLocator.textContent = intendedPage + " of " + lastPageNumber;
-
-            currPage = currPageInput.value;
-            currPageName = 'page' + currPage;
-        }
-        else{
-            // No input data
-            console.log("No input data");
-        }
-    });
-
 </script>

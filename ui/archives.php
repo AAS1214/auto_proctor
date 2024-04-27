@@ -111,6 +111,9 @@ if (!is_siteadmin($user_id)) {
     $ap_quiz_records = $DB->get_records_sql($sql, $course_ids);
     echo "<script>console.log('All Course IDs: ', " . json_encode($course_ids) . ");</script>";
     //print_r($ap_quiz_records);
+
+    // ======= NUMBER OF ALL QUIZZES
+    $num_of_all_quizzes= count($ap_quiz_records);
 }
 
 // ======== IF USER IS ADMIN
@@ -140,6 +143,9 @@ if (is_siteadmin($user_id)) {
             ";
     $ap_quiz_records = $DB->get_records_sql($sql, $course_ids);
     echo "<script>console.log('All Course IDs: ', " . json_encode($course_ids) . ");</script>";
+
+    // ======= NUMBER OF ALL QUIZZES
+    $num_of_all_quizzes= count($ap_quiz_records);
 }
 
 // Get the wwwroot of the site
@@ -193,13 +199,19 @@ $wwwroot = $CFG->wwwroot;;
                 </div>
             </form>
         </div>
-    
+
         <!-- DELETE ALL BUTTON -->
-        <div class="flex items-center">
-            <div class="flex items-center">
-                <a href="" id = "deleteAll" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 uppercase focus:ring-blue-300 font-medium rounded-lg text-xs px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800" data-quizid="delete_all_archive" <?php if (!$ap_quiz_records){ echo 'disabled';}?>>Delete All</a>
-            </div>
-        </div>
+        <?php
+            if (is_siteadmin($user_id)){
+                echo '
+                <div class="flex items-center">
+                    <div class="flex items-center">
+                        <a href="" id = "deleteAll" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 uppercase focus:ring-blue-300 font-medium rounded-lg text-xs px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800" data-quizid="delete_all_archive" '; if (!$ap_quiz_records){ echo 'disabled';} echo '>Delete All</a>
+                    </div>
+                </div>
+                ';
+            }
+        ?>
     </div>
     <!-- NEW CODE -->
     <div class="p-4 bg-white border border-gray-200 rounded-lg shadow-sm ">
@@ -298,89 +310,131 @@ $wwwroot = $CFG->wwwroot;;
                             </thead>
                             <tbody class="bg-white ">
                                 <?php
-                                foreach ($ap_quiz_records as $archived_quiz) {
-                                    // Select quiz name
-                                    $sql = "SELECT name
-                                                                FROM {quiz}
-                                                                WHERE id = :quiz_id;
-                                                            ";
-                                    $param = array('quiz_id' => $archived_quiz->quizid);
-                                    $quiz_name = $DB->get_fieldset_sql($sql, $param);
+                                    //echo "num of quizzes: " . $num_of_all_quizzes . "</br>";
 
-                                    // Selec quiz course name
-                                    $sql = "SELECT shortname
-                                                        FROM {course}
-                                                        WHERE id = :course_id;
-                                                    ";
-                                    $param = array('course_id' => $archived_quiz->course);
-                                    $course_name = $DB->get_fieldset_sql($sql, $param);
-
-                                    // Select quiz teacher name
-                                    $teacher_role_id = 3;
-                                    $editing_teacher_role_id = 4;
-
-                                    $sql = "SELECT DISTINCT u.*
-                                                            FROM {user} u
-                                                            INNER JOIN {role_assignments} ra ON ra.userid = u.id
-                                                            INNER JOIN {context} ctx ON ctx.id = ra.contextid
-                                                            INNER JOIN {course} c ON c.id = ctx.instanceid
-                                                            WHERE c.id = :course_id
-                                                            AND (ra.roleid = :teacher_role_id OR ra.roleid = :editing_teacher_role_id)";
-
-                                    // Parameters for the SQL query
-                                    $params = array(
-                                        'course_id' => $archived_quiz->course,
-                                        'teacher_role_id' => $teacher_role_id,
-                                        'editing_teacher_role_id' => $editing_teacher_role_id
-                                    );
-
-                                    $course_teacher = $DB->get_records_sql($sql, $params);
-
-                                    // // Select quiz date created
-                                    // $sql = "SELECT timecreated
-                                    //                         FROM {quiz}
-                                    //                         WHERE id = :quiz_id;
-                                    //                     ";
-                                    // $param = array('quiz_id' => $archived_quiz->quizid);
-                                    // $date_created = $DB->get_fieldset_sql($sql, $param);
-
-                                    $timestamp = strtotime($archived_quiz->archived_on);
-                                    $date_archived = date("d M Y", $timestamp);
-
-                                    echo '
-                                                    <tr>
-                                                        <td class="p-4 text-sm font-semibold  whitespace-nowrap text-gray-800">
-                                                            <h1>' . $quiz_name[0] . '</h1>
-                                                            <span class="font-normal text-[10px] text-center">
-                                                            
-                                                            </span>
-                                                        </td>
-                                                        <td class="p-4 text-sm font-normal text-gray-500 whitespace-nowrap ">
-                                                            ' . $course_name[0] . '
-                                                        </td>
-                                                        <td class="p-4 text-sm font-normal text-gray-500 whitespace-nowrap ">
-                                                        ';
-                                    foreach ($course_teacher as $teacher) {
-                                        $teacher_fullname = $teacher->firstname . ' ' . $teacher->lastname;
-                                        echo $teacher_fullname;
+                                    // Predict total num of pages
+                                    $num_pages = $num_of_all_quizzes / 30;
+                                    //echo "num of pages: " . $num_pages . "</br>";
+    
+                                    // If number is not even
+                                    if (is_float($num_pages)) {
+                                        $float_page = $num_pages;
+                                        $num_pages = (int)$float_page;
+                                        $num_pages++;
                                     }
-                                    echo '
-                                                        </td>
-                                                        <td class="p-4 text-sm font-normal text-gray-500 whitespace-nowrap ">
-                                                            ' . $date_archived . '
-                                                        </td>
-                                                        <td class="p-4 text-sm font-normal text-blue-700 hover:text-blue-900 whitespace-nowrap ">
-                                                                <a href="" class="restoreThis" data-quizid="' . $archived_quiz->quizid . '">Restore</a>
-                                                        </td>';
-                                                        if (is_siteadmin($user_id)) {
-                                                        echo '
-                                                        <td class="p-4 text-sm font-normal text-red-700 hover:text-red-900 whitespace-nowrap ">
-                                                                <a href="" class="deleteThis" data-quizid="' . $archived_quiz->quizid . '">Delete</a>
-                                                        </td>
-                                                    </tr>
-                                                ';
-                                                        }
-                                }
+                                    //echo "num of pages: " . $num_pages . "</br>";
+
+                                    // If number is 0
+                                    if ($num_pages === 0){
+                                        $num_pages = 1;
+                                    }
+
+
+                                    // Generate page name for the element
+                                    $pages_name = array();
+                                    $pages_name[] = $pagename; // Skipping the first array
+                                    // Create name of the section per page
+                                    for ($i = 1; $i <= $num_pages; $i++) {
+                                        $pagenum++;
+                                        $pagename = "page" . $pagenum;
+
+                                        $pages_name[] = $pagename;
+
+                                    }
+
+                                    //print_r($pages_name);
+                                    foreach ($ap_quiz_records as $archived_quiz) {
+                                        // Select quiz name
+                                        $sql = "SELECT name
+                                                                    FROM {quiz}
+                                                                    WHERE id = :quiz_id;
+                                                                ";
+                                        $param = array('quiz_id' => $archived_quiz->quizid);
+                                        $quiz_name = $DB->get_fieldset_sql($sql, $param);
+
+                                        // Selec quiz course name
+                                        $sql = "SELECT shortname
+                                                            FROM {course}
+                                                            WHERE id = :course_id;
+                                                        ";
+                                        $param = array('course_id' => $archived_quiz->course);
+                                        $course_name = $DB->get_fieldset_sql($sql, $param);
+
+                                        // Select quiz teacher name
+                                        $teacher_role_id = 3;
+                                        $editing_teacher_role_id = 4;
+
+                                        $sql = "SELECT DISTINCT u.*
+                                                                FROM {user} u
+                                                                INNER JOIN {role_assignments} ra ON ra.userid = u.id
+                                                                INNER JOIN {context} ctx ON ctx.id = ra.contextid
+                                                                INNER JOIN {course} c ON c.id = ctx.instanceid
+                                                                WHERE c.id = :course_id
+                                                                AND (ra.roleid = :teacher_role_id OR ra.roleid = :editing_teacher_role_id)";
+
+                                        // Parameters for the SQL query
+                                        $params = array(
+                                            'course_id' => $archived_quiz->course,
+                                            'teacher_role_id' => $teacher_role_id,
+                                            'editing_teacher_role_id' => $editing_teacher_role_id
+                                        );
+
+                                        $course_teacher = $DB->get_records_sql($sql, $params);
+
+                                        // // Select quiz date created
+                                        // $sql = "SELECT timecreated
+                                        //                         FROM {quiz}
+                                        //                         WHERE id = :quiz_id;
+                                        //                     ";
+                                        // $param = array('quiz_id' => $archived_quiz->quizid);
+                                        // $date_created = $DB->get_fieldset_sql($sql, $param);
+
+                                        $timestamp = strtotime($archived_quiz->archived_on);
+                                        $date_archived = date("d M Y", $timestamp);
+
+                                        $quiz_counter++;
+
+                                        if ($quiz_counter === 31){
+                                            $quiz_counter = 1;
+                                        }
+                                        if ($quiz_counter === 1){
+                                            $page_turner++;
+                                        }
+
+                                        echo '
+                                                        <tr name = "'. $pages_name[$page_turner] .'" style = "display: none;">
+                                                            <td class="p-4 text-sm font-semibold  whitespace-nowrap text-gray-800">
+                                                                <h1>' . $quiz_name[0] . '</h1>
+                                                                <span class="font-normal text-[10px] text-center">
+                                                                
+                                                                </span>
+                                                            </td>
+                                                            <td class="p-4 text-sm font-normal text-gray-500 whitespace-nowrap ">
+                                                                ' . $course_name[0] . '
+                                                            </td>
+                                                            <td class="p-4 text-sm font-normal text-gray-500 whitespace-nowrap ">
+                                                            ';
+                                        foreach ($course_teacher as $teacher) {
+                                            $teacher_fullname = $teacher->firstname . ' ' . $teacher->lastname;
+                                            echo $teacher_fullname;
+                                        }
+                                        echo '
+                                                            </td>
+                                                            <td class="p-4 text-sm font-normal text-gray-500 whitespace-nowrap ">
+                                                                ' . $date_archived . '
+                                                            </td>
+                                                            <td class="p-4 text-sm font-normal text-blue-700 hover:text-blue-900 whitespace-nowrap ">
+                                                                    <a href="" class="restoreThis" data-quizid="' . $archived_quiz->quizid . '">Restore</a>
+                                                            </td>';
+                                                            if (is_siteadmin($user_id)) {
+                                                            echo '
+                                                            <td class="p-4 text-sm font-normal text-red-700 hover:text-red-900 whitespace-nowrap ">
+                                                                    <a href="" class="deleteThis" data-quizid="' . $archived_quiz->quizid . '">Delete</a>
+                                                            </td>
+                                                        </tr>
+                                                    ';
+                                                            }
+                                    }
                                 ?>
                             </tbody>
                         </table>
@@ -394,21 +448,21 @@ $wwwroot = $CFG->wwwroot;;
             <div class="flex items-center mb-4 sm:mb-0">
             </div>
             <div class="flex items-center space-x-3">
-                <div class="flex items-center mb-4 sm:mb-0 gap-1">
+                <div id = "pagination_controls" class="flex items-center mb-4 sm:mb-0 gap-1">
                     <!-- previous 2 -->
-                    <a href="#" class="inline-flex border justify-center p-1 text-gray-500 rounded cursor-pointer hover:text-gray-900 hover:bg-gray-200">
+                    <a href="#" id = "prev" class="inline-flex border justify-center p-1 text-gray-500 rounded cursor-pointer hover:text-gray-900 hover:bg-gray-200">
                         <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                             <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd"></path>
                         </svg>
                     </a>
                     <!-- next 1 -->
-                    <a href="#" class="inline-flex justify-center border  p-1 mr-1 text-gray-500 rounded cursor-pointer hover:text-gray-900 hover:bg-gray-200">
+                    <a href="#" id = "next" class="inline-flex justify-center border  p-1 mr-1 text-gray-500 rounded cursor-pointer hover:text-gray-900 hover:bg-gray-200">
                         <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                             <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
                         </svg>
                     </a>
-                    <span class="text-sm font-normal text-gray-500 ">Page <span class="font-semibold text-gray-900 "> 1 of 1 </span>| <span class="text-sm font-normal text-gray-500 pr-1 ">Go to Page</span></span>
-                    <input type="text" id="first_name" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-md focus:ring-gray-500 focus:border-gray-500 block w-7 h-7 px-1" placeholder="1">
+                    <span class="text-sm font-normal text-gray-500 ">Page <span class="font-semibold text-gray-900 " id = "page_locator"> 1 of 1 </span>| <span class="text-sm font-normal text-gray-500 pr-1 ">Go to Page</span></span>
+                    <input type="text" id="page_num_text" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-md focus:ring-gray-500 focus:border-gray-500 block w-7 h-7 px-1" placeholder="1" value = "1">
 
                 </div>
             </div>
@@ -416,56 +470,93 @@ $wwwroot = $CFG->wwwroot;;
     </div>
 </main>
 
+<?php
+    echo "<script> var pagesNum = []; var lastPageNumber = ".$num_pages."</script>";
+    foreach ($pages_name as $p_name) {
+        echo '<script>pagesNum.push("' . $p_name . '");</script>';
+    }
+?>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.1/flowbite.min.js"></script>
 <script src="https://flowbite-admin-dashboard.vercel.app//app.bundle.js"></script>
 <script>
     document.addEventListener("DOMContentLoaded", function() {
-        // Select all elements with class 'archiveThis'
-        var restoreLinks = document.querySelectorAll('.restoreThis');
-        var deleteLinks = document.querySelectorAll('.deleteThis');
-        var deleteAllLink = document.getElementById("deleteAll");
 
-        // Iterate over each 'archiveThis' link
-        restoreLinks.forEach(function(link) {
-            // Add click event listener
-            link.addEventListener('click', function(event) {
-                // Prevent the default action of the link (i.e., navigating to href)
-                event.preventDefault();
-                //createOverlay();
+        // ====== DELETE, RESTORE, DELETE ALL CONTROLS
+            // Select all elements with class 'archiveThis'
+            var restoreLinks = document.querySelectorAll('.restoreThis');
+            var deleteLinks = document.querySelectorAll('.deleteThis');
+            var deleteAllLink = document.getElementById("deleteAll");
 
-                // Retrieve the quizid from the data attribute
-                var quizId = link.getAttribute('data-quizid');
+            // Iterate over each 'archiveThis' link
+            restoreLinks.forEach(function(link) {
+                // Add click event listener
+                link.addEventListener('click', function(event) {
+                    // Prevent the default action of the link (i.e., navigating to href)
+                    event.preventDefault();
+                    //createOverlay();
 
-                // Send the quizid to a PHP script via AJAX
-                var xhr = new XMLHttpRequest();
-                xhr.open('POST', 'functions/archives_functions.php', true);
-                xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-                xhr.onreadystatechange = function() {
-                    if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
-                        console.log('Quiz restored successfully');
-                        //removeOverlay();
-                        location.reload();
-                    }
-                };
-                xhr.send('quizid=' + quizId);
-                // When page is loading prevent clicking archive button
-                // when still loading it will not function
-                restoreLinks.removeAttribute('href');
-                restoreLinks.disabled = true;
+                    // Retrieve the quizid from the data attribute
+                    var quizId = link.getAttribute('data-quizid');
 
-                // Here you can perform further actions like sending the quizId via AJAX
+                    // Send the quizid to a PHP script via AJAX
+                    var xhr = new XMLHttpRequest();
+                    xhr.open('POST', 'functions/archives_functions.php', true);
+                    xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+                    xhr.onreadystatechange = function() {
+                        if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
+                            console.log('Quiz restored successfully');
+                            //removeOverlay();
+                            location.reload();
+                        }
+                    };
+                    xhr.send('quizid=' + quizId);
+                    // When page is loading prevent clicking archive button
+                    // when still loading it will not function
+                    restoreLinks.removeAttribute('href');
+                    restoreLinks.disabled = true;
+
+                    // Here you can perform further actions like sending the quizId via AJAX
+                });
             });
-        });
 
-        deleteLinks.forEach(function(link) {
-            // Add click event listener
-            link.addEventListener('click', function(event) {
+            deleteLinks.forEach(function(link) {
+                // Add click event listener
+                link.addEventListener('click', function(event) {
+                    // Prevent the default action of the link (i.e., navigating to href)
+                    event.preventDefault();
+                    //createOverlay();
+
+                    // Retrieve the quizid from the data attribute
+                    var quizId = link.getAttribute('data-quizid');
+
+                    // Send the quizid to a PHP script via AJAX
+                    var xhr = new XMLHttpRequest();
+                    xhr.open('POST', 'functions/delete_archive.php', true);
+                    xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+                    xhr.onreadystatechange = function() {
+                        if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
+                            console.log('Quiz deleted successfully');
+                            //removeOverlay();
+                            location.reload();
+                        }
+                    };
+                    xhr.send('quizid=' + quizId);
+                    // When page is loading prevent clicking archive button
+                    // when still loading it will not function
+                    deleteLinks.removeAttribute('href');
+                    deleteLinks.disabled = true;
+
+                    // Here you can perform further actions like sending the quizId via AJAX
+                });
+            });
+
+            deleteAllLink.addEventListener('click', function(event) {
                 // Prevent the default action of the link (i.e., navigating to href)
                 event.preventDefault();
-                //createOverlay();
 
                 // Retrieve the quizid from the data attribute
-                var quizId = link.getAttribute('data-quizid');
+                var quizId = deleteAllLink.getAttribute('data-quizid');
 
                 // Send the quizid to a PHP script via AJAX
                 var xhr = new XMLHttpRequest();
@@ -474,44 +565,26 @@ $wwwroot = $CFG->wwwroot;;
                 xhr.onreadystatechange = function() {
                     if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
                         console.log('Quiz deleted successfully');
+                        // You may want to perform some UI updates here
                         //removeOverlay();
                         location.reload();
                     }
                 };
                 xhr.send('quizid=' + quizId);
-                // When page is loading prevent clicking archive button
-                // when still loading it will not function
-                deleteLinks.removeAttribute('href');
-                deleteLinks.disabled = true;
-
-                // Here you can perform further actions like sending the quizId via AJAX
+                
+                // Disable the link
+                deleteAllLink.removeAttribute('href');
+                deleteAllLink.disabled = true;
             });
-        });
+        // ======
 
-        deleteAllLink.addEventListener('click', function(event) {
-            // Prevent the default action of the link (i.e., navigating to href)
-            event.preventDefault();
-
-            // Retrieve the quizid from the data attribute
-            var quizId = deleteAllLink.getAttribute('data-quizid');
-
-            // Send the quizid to a PHP script via AJAX
-            var xhr = new XMLHttpRequest();
-            xhr.open('POST', 'functions/delete_archive.php', true);
-            xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-            xhr.onreadystatechange = function() {
-                if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
-                    console.log('Quiz deleted successfully');
-                    // You may want to perform some UI updates here
-                    //removeOverlay();
-                    location.reload();
-                }
-            };
-            xhr.send('quizid=' + quizId);
-            
-            // Disable the link
-            deleteAllLink.removeAttribute('href');
-            deleteAllLink.disabled = true;
+        // Preventing the search input to be submitted
+        searchBox = document.getElementById("topbar-search");
+        searchBox.addEventListener("keydown", function(event) {
+            if (event.key === "Enter") {
+                event.preventDefault(); // Prevent form submission when Enter is pressed
+                console.log("Input value:", input.value); // You can do whatever you want with the value here
+            }
         });
     });
 
@@ -731,5 +804,231 @@ $wwwroot = $CFG->wwwroot;;
                 tr[i].style.display = "none";
             }
         }
+
+        // PAGINATION
+            var paginationControls = document.getElementById('pagination_controls');
+            var pageInputPlaceholder = document.getElementById('page_num_text');
+            var currPageInput = document.getElementById('page_num_text');
+
+            // Hide the pagination control
+            paginationControls.setAttribute("style", "display: none;");
+
+            // If input is emptied
+            // Go back to the recent page
+            if (input.value === ""){
+                for (i = 0; i < tr.length; i++) {
+                    // Loop through all td elements in the row
+                    var found = false;
+                    td = tr[i].getElementsByTagName("td");
+
+                    tr[i].style.display = "none"; // Hide the row if the search query is not found in any column        
+                }
+                paginationControls.removeAttribute("style");
+
+                var backToPage = "page" + pageInputPlaceholder.placeholder;
+                var displayElements = document.querySelectorAll("tr[name='" + backToPage + "']");
+                for(var i = 0; i < displayElements.length; i++){
+                    displayElements[i].removeAttribute("style");
+                }
+                    }
+        // ===
     }
+
+    // PAGINATION
+        var displayElements = document.querySelectorAll("tr[name='page1']");
+        var prev = document.getElementById('prev');
+        var next = document.getElementById('next');
+        var pageLocator = document.getElementById("page_locator");
+        var currPageInput = document.getElementById('page_num_text');
+        
+
+        // DEFAULT SHOW PAGE 1
+        for(var i = 0; i < displayElements.length; i++){
+            displayElements[i].removeAttribute("style");
+        }
+
+        // Update the page locator
+        pageLocator.textContent = "1 of " + lastPageNumber;
+
+        var currPageInput = document.getElementById('page_num_text');
+        var currPage = page_num_text.value;
+        var currPageName = 'page' + currPage;
+
+        prev.addEventListener('click', function(event) {
+            var currPageInput = document.getElementById('page_num_text');
+            var currPage = page_num_text.value;
+            var currPageName = 'page' + currPage;
+
+            var intendedPage;
+
+            // Prevent the default action of the link (i.e., navigating to href)
+            event.preventDefault();      
+            console.log('prev clicked');   
+
+            // If already in firstpage make it disable
+            if(parseInt(currPage) === 1){
+                return;
+            }
+
+            // Disable the anchor element
+            prev.removeAttribute('href');
+            prev.disabled = true;
+
+            // Predicting the intended page
+            console.log('curr page: ', currPage);
+            console.log('curr pagename: ', currPageName)
+            intendedPage = parseInt(currPage) - 1;
+            console.log('intended page: ', intendedPage)
+            console.log('redirecting to page: ', pagesNum[intendedPage]);
+
+            // If the page text box is empty or blank
+            if (currPage === ""){
+                intendedPage = 1;
+            }
+
+            // Hide curr page
+            var displayElements = document.querySelectorAll("tr[name='" + pagesNum[currPage] + "']");
+            for(var i = 0; i < displayElements.length; i++){
+                displayElements[i].setAttribute("style", "display: none;");
+            }
+
+            // Display intended page
+            var displayElements = document.querySelectorAll("tr[name='" + pagesNum[intendedPage] + "']");
+
+            for(var i = 0; i < displayElements.length; i++){
+                displayElements[i].removeAttribute("style");
+            }
+
+            // Update page text holder
+            currPageInput.value = intendedPage;
+
+            // Update the page locator
+            pageLocator.textContent = intendedPage + " of " + lastPageNumber;
+
+            // Update input placeholder
+            currPageInput.placeholder = intendedPage;
+
+            currPageName = "page" + intendedPage;
+        }); 
+
+        next.addEventListener('click', function(event) {
+            var currPageInput = document.getElementById('page_num_text');
+            var currPage = page_num_text.value;
+            var currPageName = 'page' + currPage;
+
+            var intendedPage;
+
+            // Prevent the default action of the link (i.e., navigating to href)
+            event.preventDefault();      
+            console.log('next clicked');   
+
+            // If already in lastpage make it disable
+            if(parseInt(currPage) === lastPageNumber){
+                return;
+            }
+
+            // Disable the anchor element
+            next.removeAttribute('href');
+            next.disabled = true;
+
+            // Predicting the intended page
+            console.log('curr page: ', currPage);
+            console.log('curr pagename: ', currPageName)
+            intendedPage = parseInt(currPage) + 1;
+            console.log('intended page: ', intendedPage)
+            console.log('redirecting to page: ', pagesNum[intendedPage]);
+
+            // If the page text box is empty or blank
+            if (currPage === ""){
+                intendedPage = lastPageNumber;
+            }
+
+            // Hide curr page
+            var displayElements = document.querySelectorAll("tr[name='" + pagesNum[currPage] + "']");
+            for(var i = 0; i < displayElements.length; i++){
+                displayElements[i].setAttribute("style", "display: none;");
+            }
+
+            // Display intended page
+            var displayElements = document.querySelectorAll("tr[name='" + pagesNum[intendedPage] + "']");
+
+            for(var i = 0; i < displayElements.length; i++){
+                displayElements[i].removeAttribute("style");
+            }
+
+            // Update page text holder
+            currPageInput.value = intendedPage;
+
+            // Update the page locator
+            pageLocator.textContent = intendedPage + " of " + lastPageNumber;
+
+            // Update input placeholder
+            currPageInput.placeholder = intendedPage;
+
+            currPageName = "page" + intendedPage;
+        });  
+
+        currPageInput.addEventListener("input", function() {
+            var inputPage= currPageInput.value.trim(); // Trim any leading or trailing spaces
+            var pageLocator = document.getElementById("page_locator");
+            var content = pageLocator.textContent.trim(); // Get the text content and remove leading/trailing spaces
+            var firstDigit = content.match(/\d/);
+            var currPage = firstDigit[0];
+            var currPageName = "page" + currPage;
+
+            if (currPageInput !== "") {
+                // Process the input data
+                console.log("Input data:", currPageInput.value);
+
+                var intendedPage;
+                // Current page element
+
+                // If already in last page make it disable
+                if(currPageInput.value > lastPageNumber){
+                    currPageInput.value = lastPageNumber;
+                }
+
+                // If already in first page make it disable
+                if(parseInt(currPageInput.value) < 1){
+                    currPageInput.value = 1;
+                }
+
+                // Predicting the intended page
+                console.log('curr page: ', currPage);
+                console.log('curr pagename: ', currPageName)
+                intendedPage = currPageInput.value;
+                console.log('intended page: ', intendedPage)
+                console.log('redirecting to page: ', 'page' + intendedPage);
+
+                // Hide the current page
+                for (var i = 0; i < pagesNum.length; i++) {
+                    if (pagesNum[i] != pagesNum[intendedPage]){
+                        console.log('pages to hide: ',pagesNum[i]);
+                        var hideElements = document.querySelectorAll("tr[name='" + pagesNum[i] + "']");
+                        for(var j = 0; j < hideElements.length; j++){
+                            hideElements[j].setAttribute("style", "display: none;");
+                        }
+                    }
+                }
+
+                // Dsiplay the current page
+                var displayElements = document.querySelectorAll("tr[name='" + pagesNum[intendedPage] + "']");
+                for(var i = 0; i < displayElements.length; i++){
+                    displayElements[i].removeAttribute("style");
+                }
+
+                // Update page text holder
+                currPageInput.placeholder = intendedPage;
+
+                // Update the page locator
+                pageLocator.textContent = intendedPage + " of " + lastPageNumber;
+
+                currPage = currPageInput.value;
+                currPageName = 'page' + currPage;
+            }
+            else{
+                // No input data
+                console.log("No input data");
+            }
+        });
 </script>

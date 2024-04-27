@@ -749,6 +749,36 @@ if (isset($_GET['course_id']) && isset($_GET['quiz_id'])) {
                                     ";
                                 }
 
+                                // === PAGINATION
+                                    // Predict total num of pages
+                                    $num_pages = count($all_quiz_attempts) / 1;
+
+                                    // If number is not even
+                                    if (is_float($num_pages)) {
+                                        $float_page = $num_pages;
+                                        $num_pages = (int)$float_page;
+                                        $num_pages++;
+                                    }
+
+                                    // If number is 0
+                                    if ($num_pages === 0){
+                                        $num_pages = 1;
+                                    }
+
+                                    // Generate page name for the element
+                                    $pages_name = array();
+                                    $pages_name[] = $pagename; // Skipping the first array
+                                    // Create name of the section per page
+                                    for ($i = 1; $i <= $num_pages; $i++) {
+                                        $pagenum++;
+                                        $pagename = "page" . $pagenum;
+
+                                        $pages_name[] = $pagename;
+
+                                    }
+                                //======
+
+
                                 foreach ($all_quiz_attempts as $attempt) {
                                     $userid = $attempt->userid;
 
@@ -806,8 +836,19 @@ if (isset($_GET['course_id']) && isset($_GET['quiz_id'])) {
                                             $params = array('user_id' => $attempt->userid, 'quiz_id' => $attempt->quiz, 'quiz_attempt' => $attempt->attempt);
                                             $trust_score = $DB->get_fieldset_sql($sql, $params);
 
+                                    // === PAGINATION
+                                        $attempt_counter++;
+
+                                        if ($attempt_counter === 2){
+                                            $attempt_counter = 1;
+                                        }
+                                        if ($attempt_counter === 1){
+                                            $page_turner++;
+                                        }
+                                    // ===
+
                                     echo '
-                                            <tr>
+                                            <tr name = "'. $pages_name[$page_turner] .'" style = "display: none;">
                                             <td class="p-4 text-sm font-normal text-gray-900 whitespace-nowrap ">
                                                 <span class="font-semibold">' . $user_full_name . '</span>
                                             </td>
@@ -833,27 +874,6 @@ if (isset($_GET['course_id']) && isset($_GET['quiz_id'])) {
                                         ';
                                 }
                                 ?>
-                                <!-- <tr class="bg-gray-100 ">
-                                    <td class="p-4 text-sm font-normal text-gray-900 whitespace-nowrap ">
-                                      <span class="font-semibold">Alvince Arandia</span>
-                                    </td>
-                                    <td class="p-4 text-sm font-normal text-gray-500 whitespace-nowrap ">
-                                      renzidelposo@gmail.com
-                                    </td>
-                                    <td class="p-4 text-sm font-semibold text-gray-900 whitespace-nowrap ">
-                                      8-Dec 08:59 AM
-                                    </td>
-                                    <td class="p-4 text-sm font-normal text-gray-500 whitespace-nowrap ">
-                                      8-Dec 11:59 PM
-                                    </td>
-                                    <td class="p-4 text-sm font-normal text-gray-500 whitespace-nowrap ">
-                                      30 minutes
-                                    </td>
-                                    <td class="p-4 whitespace-nowrap">
-                                      <a
-                                        class=" text-blue-800 text-xs font-medium mr-2 px-2.5 py-0.5">View Report</a>
-                                    </td>
-                                  </tr> -->
                             </tbody>
                         </table>
                     </div>
@@ -861,32 +881,39 @@ if (isset($_GET['course_id']) && isset($_GET['quiz_id'])) {
             </div>
         </div>
         <!-- card footer -->
-        <div class="sticky bottom-0 right-0 items-center w-full p-4 pb-2 bg-white border-t border-gray-200 sm:flex sm:justify-between ">
+        <div id = "pagination_controls" class="sticky bottom-0 right-0 items-center w-full p-4 pb-2 bg-white border-t border-gray-200 sm:flex sm:justify-between ">
             <!-- note: do not delete this haha -->
             <div class="flex items-center mb-4 sm:mb-0">
             </div>
             <div class="flex items-center space-x-3">
                 <div class="flex items-center mb-4 sm:mb-0 gap-1">
                     <!-- previous 2 -->
-                    <a href="#" class="inline-flex border justify-center p-1 text-gray-500 rounded cursor-pointer hover:text-gray-900 hover:bg-gray-200">
+                    <a href="#" id = "prev" class="inline-flex border justify-center p-1 text-gray-500 rounded cursor-pointer hover:text-gray-900 hover:bg-gray-200">
                         <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                             <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd"></path>
                         </svg>
                     </a>
                     <!-- next 1 -->
-                    <a href="#" class="inline-flex justify-center border  p-1 mr-1 text-gray-500 rounded cursor-pointer hover:text-gray-900 hover:bg-gray-200">
+                    <a href="#" id = "next" class="inline-flex justify-center border  p-1 mr-1 text-gray-500 rounded cursor-pointer hover:text-gray-900 hover:bg-gray-200">
                         <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                             <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
                         </svg>
                     </a>
-                    <span class="text-sm font-normal text-gray-500 ">Page <span class="font-semibold text-gray-900 "> 1 of 1 </span>| <span class="text-sm font-normal text-gray-500 pr-1 ">Go to Page</span></span>
-                    <input type="text" id="first_name" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-md focus:ring-gray-500 focus:border-gray-500 block w-7 h-7 px-1" placeholder="1">
+                    <span class="text-sm font-normal text-gray-500 ">Page <span class="font-semibold text-gray-900 " id = "page_locator"> 1 of 1 </span>| <span class="text-sm font-normal text-gray-500 pr-1 ">Go to Page</span></span>
+                    <input type="text" id="page_num_text" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-md focus:ring-gray-500 focus:border-gray-500 block w-7 h-7 px-1" placeholder="1" value = "1">
 
                 </div>
             </div>
         </div>
     </div>
 </main>
+<?php
+    echo "<script> var pagesNum = []; var lastPageNumber = ".$num_pages."</script>";
+    foreach ($pages_name as $p_name) {
+        echo '<script>pagesNum.push("' . $p_name . '");</script>';
+    }
+?>
+
 <script>
     document.addEventListener("DOMContentLoaded", function() {
         // Select the element with the id 'exportThis'
@@ -924,6 +951,217 @@ if (isset($_GET['course_id']) && isset($_GET['quiz_id'])) {
             };
             xhr.send('quiz_id=' + quizId + '&quiz_name=' + quizName);
 
+        });
+
+        // PAGINATION
+            var displayElements = document.querySelectorAll("tr[name='page1']");
+            var prev = document.getElementById('prev');
+            var next = document.getElementById('next');
+            var pageLocator = document.getElementById("page_locator");
+            var currPageInput = document.getElementById('page_num_text');
+            
+
+            // DEFAULT SHOW PAGE 1
+            for(var i = 0; i < displayElements.length; i++){
+                displayElements[i].removeAttribute("style");
+            }
+
+            // Update the page locator
+            pageLocator.textContent = "1 of " + lastPageNumber;
+
+            var currPageInput = document.getElementById('page_num_text');
+            var currPage = page_num_text.value;
+            var currPageName = 'page' + currPage;
+
+            prev.addEventListener('click', function(event) {
+                var currPageInput = document.getElementById('page_num_text');
+                var currPage = page_num_text.value;
+                var currPageName = 'page' + currPage;
+
+                var intendedPage;
+
+                // Prevent the default action of the link (i.e., navigating to href)
+                event.preventDefault();      
+                console.log('prev clicked');   
+
+                // If already in firstpage make it disable
+                if(parseInt(currPage) === 1){
+                    return;
+                }
+
+                // Disable the anchor element
+                prev.removeAttribute('href');
+                prev.disabled = true;
+
+                // Predicting the intended page
+                console.log('curr page: ', currPage);
+                console.log('curr pagename: ', currPageName)
+                intendedPage = parseInt(currPage) - 1;
+                console.log('intended page: ', intendedPage)
+                console.log('redirecting to page: ', pagesNum[intendedPage]);
+
+                // If the page text box is empty or blank
+                if (currPage === ""){
+                    intendedPage = 1;
+                }
+
+                // Hide curr page
+                var displayElements = document.querySelectorAll("tr[name='" + pagesNum[currPage] + "']");
+                for(var i = 0; i < displayElements.length; i++){
+                    displayElements[i].setAttribute("style", "display: none;");
+                }
+
+                // Display intended page
+                var displayElements = document.querySelectorAll("tr[name='" + pagesNum[intendedPage] + "']");
+
+                for(var i = 0; i < displayElements.length; i++){
+                    displayElements[i].removeAttribute("style");
+                }
+
+                // Update page text holder
+                currPageInput.value = intendedPage;
+
+                // Update the page locator
+                pageLocator.textContent = intendedPage + " of " + lastPageNumber;
+
+                // Update input placeholder
+                currPageInput.placeholder = intendedPage;
+
+                currPageName = "page" + intendedPage;
+            }); 
+
+            next.addEventListener('click', function(event) {
+                var currPageInput = document.getElementById('page_num_text');
+                var currPage = page_num_text.value;
+                var currPageName = 'page' + currPage;
+
+                var intendedPage;
+
+                // Prevent the default action of the link (i.e., navigating to href)
+                event.preventDefault();      
+                console.log('next clicked');   
+
+                // If already in lastpage make it disable
+                if(parseInt(currPage) === lastPageNumber){
+                    return;
+                }
+
+                // Disable the anchor element
+                next.removeAttribute('href');
+                next.disabled = true;
+
+                // Predicting the intended page
+                console.log('curr page: ', currPage);
+                console.log('curr pagename: ', currPageName)
+                intendedPage = parseInt(currPage) + 1;
+                console.log('intended page: ', intendedPage)
+                console.log('redirecting to page: ', pagesNum[intendedPage]);
+
+                // If the page text box is empty or blank
+                if (currPage === ""){
+                    intendedPage = lastPageNumber;
+                }
+
+                // Hide curr page
+                var displayElements = document.querySelectorAll("tr[name='" + pagesNum[currPage] + "']");
+                for(var i = 0; i < displayElements.length; i++){
+                    displayElements[i].setAttribute("style", "display: none;");
+                }
+
+                // Display intended page
+                var displayElements = document.querySelectorAll("tr[name='" + pagesNum[intendedPage] + "']");
+
+                for(var i = 0; i < displayElements.length; i++){
+                    displayElements[i].removeAttribute("style");
+                }
+
+                // Update page text holder
+                currPageInput.value = intendedPage;
+
+                // Update the page locator
+                pageLocator.textContent = intendedPage + " of " + lastPageNumber;
+
+                // Update input placeholder
+                currPageInput.placeholder = intendedPage;
+
+                currPageName = "page" + intendedPage;
+            });  
+
+            currPageInput.addEventListener("input", function() {
+                var inputPage= currPageInput.value.trim(); // Trim any leading or trailing spaces
+                var pageLocator = document.getElementById("page_locator");
+                var content = pageLocator.textContent.trim(); // Get the text content and remove leading/trailing spaces
+                var firstDigit = content.match(/\d/);
+                var currPage = firstDigit[0];
+                var currPageName = "page" + currPage;
+
+                if (currPageInput !== "") {
+                    // Process the input data
+                    console.log("Input data:", currPageInput.value);
+
+                    var intendedPage;
+                    // Current page element
+
+                    // If already in last page make it disable
+                    if(currPageInput.value > lastPageNumber){
+                        currPageInput.value = lastPageNumber;
+                    }
+
+                    // If already in first page make it disable
+                    if(parseInt(currPageInput.value) < 1){
+                        currPageInput.value = 1;
+                    }
+
+                    // Predicting the intended page
+                    console.log('curr page: ', currPage);
+                    console.log('curr pagename: ', currPageName)
+                    intendedPage = currPageInput.value;
+                    console.log('intended page: ', intendedPage)
+                    console.log('redirecting to page: ', 'page' + intendedPage);
+
+                    // Hide the current page
+                    for (var i = 0; i < pagesNum.length; i++) {
+                        if (pagesNum[i] != pagesNum[intendedPage]){
+                            console.log('pages to hide: ',pagesNum[i]);
+                            var hideElements = document.querySelectorAll("tr[name='" + pagesNum[i] + "']");
+                            for(var j = 0; j < hideElements.length; j++){
+                                hideElements[j].setAttribute("style", "display: none;");
+                            }
+                        }
+                    }
+
+                    // Dsiplay the current page
+                    var displayElements = document.querySelectorAll("tr[name='" + pagesNum[intendedPage] + "']");
+                    for(var i = 0; i < displayElements.length; i++){
+                        displayElements[i].removeAttribute("style");
+                    }
+
+                    // Update page text holder
+                    currPageInput.placeholder = intendedPage;
+
+                    // Update the page locator
+                    pageLocator.textContent = intendedPage + " of " + lastPageNumber;
+
+                    // Update input placeholder
+                    currPageInput.placeholder = intendedPage;
+
+                    currPage = currPageInput.value;
+                    currPageName = 'page' + currPage;
+                }
+                else{
+                    // No input data
+                    console.log("No input data");
+                }
+            });
+        // ===
+
+        // Preventing the search input to be submitted
+        searchBox = document.getElementById("myInput");
+        searchBox.addEventListener("keydown", function(event) {
+            if (event.key === "Enter") {
+                event.preventDefault(); // Prevent form submission when Enter is pressed
+                console.log("Input value:", input.value); // You can do whatever you want with the value here
+            }
         });
     });
 
@@ -1027,6 +1265,7 @@ if (isset($_GET['course_id']) && isset($_GET['quiz_id'])) {
         filter = input.value.toUpperCase();
         table = document.getElementById("myTable");
         tr = table.getElementsByTagName("tr");
+        
         for (i = 0; i < tr.length; i++) {
             // Loop through all td elements in the row
             var found = false;
@@ -1044,6 +1283,38 @@ if (isset($_GET['course_id']) && isset($_GET['quiz_id'])) {
             tr[i].style.display = "none"; // Hide the row if the search query is not found in any column
             }
         }
+
+        // PAGINATION
+            var paginationControls = document.getElementById('pagination_controls');
+            var pageInputPlaceholder = document.getElementById('page_num_text');
+            var currPageInput = document.getElementById('page_num_text');
+
+            // Hide the pagination control
+            paginationControls.setAttribute("style", "display: none;");
+
+            // If input is emptied
+            // Go back to the recent page
+            if (input.value === ""){
+                console.log('blank');
+
+                for (i = 0; i < tr.length; i++) {
+                    // Loop through all td elements in the row
+                    var found = false;
+                    td = tr[i].getElementsByTagName("td");
+
+                    tr[i].style.display = "none"; // Hide the row if the search query is not found in any column
+                    
+                }
+                paginationControls.removeAttribute("style");
+
+                var backToPage = "page" + pageInputPlaceholder.placeholder;
+                console.log('redirecting to pageee: ', backToPage);
+                var displayElements = document.querySelectorAll("tr[name='" + backToPage + "']");
+                    for(var i = 0; i < displayElements.length; i++){
+                        displayElements[i].removeAttribute("style");
+                    }
+            }
+        // ===
     }
 
 </script>

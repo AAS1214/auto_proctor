@@ -34,7 +34,7 @@ if($_POST['auto_delete']){
         $sql = "SELECT quizid
             FROM {auto_proctor_quiz_tb}
             WHERE archived = :archived
-            AND archived_on < DATE_SUB(NOW(), INTERVAL 1 DAY)
+            AND archived_on < DATE_SUB(NOW(), INTERVAL 60 DAY)
         ";
         $params = array('archived' => $archived);
         $archived_quiz = $DB->get_fieldset_sql($sql, $params);
