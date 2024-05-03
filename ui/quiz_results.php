@@ -751,7 +751,7 @@ if (isset($_GET['course_id']) && isset($_GET['quiz_id'])) {
 
                                 // === PAGINATION
                                     // Predict total num of pages
-                                    $num_pages = count($all_quiz_attempts) / 1;
+                                    $num_pages = count($all_quiz_attempts) / 30;
 
                                     // If number is not even
                                     if (is_float($num_pages)) {
@@ -839,7 +839,7 @@ if (isset($_GET['course_id']) && isset($_GET['quiz_id'])) {
                                     // === PAGINATION
                                         $attempt_counter++;
 
-                                        if ($attempt_counter === 2){
+                                        if ($attempt_counter === 31){
                                             $attempt_counter = 1;
                                         }
                                         if ($attempt_counter === 1){
