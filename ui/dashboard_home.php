@@ -310,7 +310,14 @@ $num_of_courses = count($course_ids);
                             <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"></path>
                         </svg>
                     </div>
-                    <input type="text" name="homeSearch" id="topbar-search" class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full pl-10 px-4 py-2  text-black " placeholder="Search">
+                    <input type="text" name="homeSearch" id="topbar-search" onkeyup="myFunction()" class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full pl-10 px-4 py-2  text-black " placeholder="Search" 
+                        <?php
+                            if (isset($_GET['homeSearch'])){
+                                $searchKey = $_GET['homeSearch'];
+                                echo 'value="' . $searchKey .'"';
+                            }
+                        ?>
+                    >
                 </div>
             </form>
         </div>
@@ -321,7 +328,7 @@ $num_of_courses = count($course_ids);
             <div class="overflow-x-auto rounded-lg">
                 <div class="inline-block min-w-full align-middle">
                     <div class="overflow-hidden shadow sm:rounded-lg">
-                        <table class="min-w-full divide-y divide-gray-200 ">
+                        <table id = "myTable" class="min-w-full divide-y divide-gray-200 ">
                             <thead class="bg-gray-100 ">
                                 <tr>
                                     <!--ID HERE-->
@@ -604,7 +611,7 @@ $num_of_courses = count($course_ids);
                                 }
 
                                 // Predict total num of pages
-                                $num_pages = $num_of_all_students / 1;
+                                $num_pages = $num_of_all_students / 30;
                                 //echo $num_pages;
 
                                 // If number is not even
@@ -638,7 +645,7 @@ $num_of_courses = count($course_ids);
                                 foreach ($all_students as $student) {
                                     $stud_counter++;
                                     
-                                    if ($stud_counter === 2){
+                                    if ($stud_counter === 31){
                                         $stud_counter = 1;
                                     }
                                     if ($stud_counter === 1){
@@ -729,7 +736,7 @@ $num_of_courses = count($course_ids);
             <div class="flex items-center mb-4 sm:mb-0">
             </div>
             <div class="flex items-center space-x-3">
-                <div class="flex items-center mb-4 sm:mb-0">
+                <div id = "pagination_controls" class="flex items-center mb-4 sm:mb-0">
                     <!-- previous 1 -->
                     <!-- <a href="#" id = "jump_prev" class="inline-flex border justify-center p-1 mr-2 text-gray-500 rounded cursor-pointer hover:text-gray-900 hover:bg-gray-200">
                         <svg class="w-5 h-5 transform -scale-x-1" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -770,6 +777,58 @@ $num_of_courses = count($course_ids);
     }
 ?>
 <script>
+    // ==== Detect when searchbar is empty
+        function myFunction() {
+            var input, filter, table, tr, td, i, j, txtValue;
+            input = document.getElementById("topbar-search");
+            filter = input.value.toUpperCase();
+            table = document.getElementById("myTable");
+            tr = table.getElementsByTagName("tr");
+            for (i = 0; i < tr.length; i++) {
+                var display = false; // Flag to determine if row should be displayed
+                td = tr[i].getElementsByTagName("td");
+                for (j = 0; j < td.length; j++) {
+                    if (td[j]) {
+                        txtValue = td[j].textContent || td[j].innerText;
+                        if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                            display = true; // If keyword found in any column, set display to true
+                        }
+                    }
+                }
+                // Set the display style based on the flag
+                tr[i].style.display = display ? "" : "none";
+            }
+
+            // PAGINATION
+            var paginationControls = document.getElementById('pagination_controls');
+            var pageInputPlaceholder = document.getElementById('page_num_text');
+            var currPageInput = document.getElementById('page_num_text');
+
+            // Hide the pagination control
+            paginationControls.setAttribute("style", "display: none;");
+
+            // If input is emptied
+            // Go back to the recent page
+            if (input.value === ""){
+                for (i = 0; i < tr.length; i++) {
+                    // Loop through all td elements in the row
+                    var found = false;
+                    td = tr[i].getElementsByTagName("td");
+
+                    tr[i].style.display = "none"; // Hide the row if the search query is not found in any column        
+                }
+                paginationControls.removeAttribute("style");
+
+                var backToPage = "page" + pageInputPlaceholder.placeholder;
+                var displayElements = document.querySelectorAll("tr[name='" + backToPage + "']");
+                for(var i = 0; i < displayElements.length; i++){
+                    displayElements[i].removeAttribute("style");
+                }
+            }
+        // ===
+        }
+    // ====
+
     document.addEventListener("DOMContentLoaded", function() {
     
         // PAGINATION
@@ -970,5 +1029,14 @@ $num_of_courses = count($course_ids);
                 }
             });
         // ===
+
+        // Preventing the search input to be submitted
+        searchBox = document.getElementById("topbar-search");
+        searchBox.addEventListener("keydown", function(event) {
+            if (event.key === "Enter") {
+                event.preventDefault(); // Prevent form submission when Enter is pressed
+                console.log("Input value:", input.value); // You can do whatever you want with the value here
+            }
+        });
     });
 </script>
