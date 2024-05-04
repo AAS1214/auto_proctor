@@ -203,13 +203,24 @@ $wwwroot = $CFG->wwwroot;;
         <!-- DELETE ALL BUTTON -->
         <?php
             if (is_siteadmin($user_id)){
-                echo '
-                <div class="flex items-center">
+                if ($ap_quiz_records){
+                    echo '
                     <div class="flex items-center">
-                        <a href="" id = "deleteAll" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 uppercase focus:ring-blue-300 font-medium rounded-lg text-xs px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800" data-quizid="delete_all_archive" '; if (!$ap_quiz_records){ echo 'disabled';} echo '>Delete All</a>
+                        <div class="flex items-center">
+                            <a href="" id = "deleteAll" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 uppercase focus:ring-blue-300 font-medium rounded-lg text-xs px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800" data-quizid="delete_all_archive">Delete All</a>
+                        </div>
                     </div>
-                </div>
-                ';
+                    ';
+                }
+                else{
+                    echo '
+                    <div class="flex items-center">
+                        <div class="flex items-center">
+                            <button class="text-white bg-gray-400 focus:ring-4 uppercase font-medium rounded-lg text-xs px-5 py-2.5 me-2 mb-2 dark:bg-gray-600 dark:hover:bg-gray-400" data-quizid="delete_all_archive" disabled>Delete All</button>
+                        </div>
+                    </div>
+                    ';
+                }
             }
         ?>
     </div>
