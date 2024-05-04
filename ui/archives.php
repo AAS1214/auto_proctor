@@ -496,21 +496,26 @@ $wwwroot = $CFG->wwwroot;;
                     event.preventDefault();
                     //createOverlay();
 
-                    // Retrieve the quizid from the data attribute
-                    var quizId = link.getAttribute('data-quizid');
+                    var confirmation = confirm("Restore an archived quiz?");
 
-                    // Send the quizid to a PHP script via AJAX
-                    var xhr = new XMLHttpRequest();
-                    xhr.open('POST', 'functions/archives_functions.php', true);
-                    xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-                    xhr.onreadystatechange = function() {
-                        if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
-                            console.log('Quiz restored successfully');
-                            //removeOverlay();
-                            location.reload();
-                        }
-                    };
-                    xhr.send('quizid=' + quizId);
+                    if (confirmation) {
+
+                        // Retrieve the quizid from the data attribute
+                        var quizId = link.getAttribute('data-quizid');
+
+                        // Send the quizid to a PHP script via AJAX
+                        var xhr = new XMLHttpRequest();
+                        xhr.open('POST', 'functions/archives_functions.php', true);
+                        xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+                        xhr.onreadystatechange = function() {
+                            if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
+                                alert("Quiz restored successfully.");
+                                //removeOverlay();
+                                location.reload();
+                            }
+                        };
+                        xhr.send('quizid=' + quizId);
+                    }
                     // When page is loading prevent clicking archive button
                     // when still loading it will not function
                     restoreLinks.removeAttribute('href');
@@ -527,21 +532,26 @@ $wwwroot = $CFG->wwwroot;;
                     event.preventDefault();
                     //createOverlay();
 
-                    // Retrieve the quizid from the data attribute
-                    var quizId = link.getAttribute('data-quizid');
+                    var confirmation = confirm("Delete an archived quiz?");
 
-                    // Send the quizid to a PHP script via AJAX
-                    var xhr = new XMLHttpRequest();
-                    xhr.open('POST', 'functions/delete_archive.php', true);
-                    xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-                    xhr.onreadystatechange = function() {
-                        if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
-                            console.log('Quiz deleted successfully');
-                            //removeOverlay();
-                            location.reload();
-                        }
-                    };
-                    xhr.send('quizid=' + quizId);
+                    if (confirmation) {
+                        // Retrieve the quizid from the data attribute
+                        var quizId = link.getAttribute('data-quizid');
+
+                        // Send the quizid to a PHP script via AJAX
+                        var xhr = new XMLHttpRequest();
+                        xhr.open('POST', 'functions/delete_archive.php', true);
+                        xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+                        xhr.onreadystatechange = function() {
+                            if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
+                                alert("Quiz deleted successfully.");
+                                //removeOverlay();
+                                location.reload();
+                            }
+                        };
+                        xhr.send('quizid=' + quizId);
+                    }
+                    
                     // When page is loading prevent clicking archive button
                     // when still loading it will not function
                     deleteLinks.removeAttribute('href');
@@ -555,22 +565,28 @@ $wwwroot = $CFG->wwwroot;;
                 // Prevent the default action of the link (i.e., navigating to href)
                 event.preventDefault();
 
-                // Retrieve the quizid from the data attribute
-                var quizId = deleteAllLink.getAttribute('data-quizid');
+                var confirmation = confirm("Delete all archived quizzes?");
 
-                // Send the quizid to a PHP script via AJAX
-                var xhr = new XMLHttpRequest();
-                xhr.open('POST', 'functions/delete_archive.php', true);
-                xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-                xhr.onreadystatechange = function() {
-                    if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
-                        console.log('Quiz deleted successfully');
-                        // You may want to perform some UI updates here
-                        //removeOverlay();
-                        location.reload();
-                    }
-                };
-                xhr.send('quizid=' + quizId);
+                if (confirmation) {
+
+                    // Retrieve the quizid from the data attribute
+                    var quizId = deleteAllLink.getAttribute('data-quizid');
+
+                    // Send the quizid to a PHP script via AJAX
+                    var xhr = new XMLHttpRequest();
+                    xhr.open('POST', 'functions/delete_archive.php', true);
+                    xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+                    xhr.onreadystatechange = function() {
+                        if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
+                            alert("All quizzes deleted successfully.");
+                            console.log('All quizzes deleted successfully.');
+                            // You may want to perform some UI updates here
+                            //removeOverlay();
+                            location.reload();
+                        }
+                    };
+                    xhr.send('quizid=' + quizId);
+                }
                 
                 // Disable the link
                 deleteAllLink.removeAttribute('href');
