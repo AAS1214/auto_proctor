@@ -589,7 +589,7 @@ $wwwroot = $CFG->wwwroot;;
                     xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
                     xhr.onreadystatechange = function() {
                         if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
-                            alert("All quizzes deleted successfully.");
+                            alert("All archived quizzes deleted successfully.");
                             console.log('All archived quizzes deleted successfully.');
                             // You may want to perform some UI updates here
                             //removeOverlay();
