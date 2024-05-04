@@ -579,7 +579,7 @@ $wwwroot = $CFG->wwwroot;;
                     xhr.onreadystatechange = function() {
                         if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
                             alert("All quizzes deleted successfully.");
-                            console.log('All quizzes deleted successfully.');
+                            console.log('All archived quizzes deleted successfully.');
                             // You may want to perform some UI updates here
                             //removeOverlay();
                             location.reload();
