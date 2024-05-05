@@ -1,4 +1,4 @@
-
+// @author      Renzi, Angelica
 
     function showWarningNotificationForFiveSeconds(warningMessage) {
         // Call createSection function to create the section
