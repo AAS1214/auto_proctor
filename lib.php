@@ -349,7 +349,7 @@ function local_auto_proctor_extend_navigation(global_navigation $navigation){
             foreach ($all_course_id as $course_id) {
                 if (has_capability($capability, context_course::instance($course_id->id), $userid)) {
                     //echo "User has the capability '$capability'";
-                    $main_node = $navigation->add('Auto-Proctor', '/local/auto_proctor/ui/auto_proctor_dashboard.php');
+                    $main_node = $navigation->add('e-Proctor', '/local/auto_proctor/ui/auto_proctor_dashboard.php');
                     $main_node->nodetype = 1;
                     $main_node->collapse = false;
                     $main_node->forceopen = true;
@@ -365,7 +365,7 @@ function local_auto_proctor_extend_navigation(global_navigation $navigation){
     // AP dashboard must be accessible
         if (!$access_ap_dashboard){
             if (is_siteadmin($user_id)) {
-                $main_node = $navigation->add('Auto-Proctor', '/local/auto_proctor/ui/auto_proctor_dashboard.php');
+                $main_node = $navigation->add('e-Proctor', '/local/auto_proctor/ui/auto_proctor_dashboard.php');
                 $main_node->nodetype = 1;
                 $main_node->collapse = false;
                 $main_node->forceopen = true;
